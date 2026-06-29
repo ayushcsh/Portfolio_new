@@ -67,6 +67,43 @@ export const singleProjectQuery = groq`*[_type == "project" && slug.current == $
   description
 }`;
 
+export const certificationsQuery = groq`*[_type == "certification"] | order(issuedDate desc, _createdAt desc){
+  _id,
+  name,
+  "slug": slug.current,
+  tagline,
+  issuer,
+  issuedDate,
+  "logo": logo.asset->url,
+}`;
+
+export const singleCertificationQuery = groq`*[_type == "certification" && slug.current == $slug][0]{
+  _id,
+  name,
+  "slug": slug.current,
+  credentialUrl,
+  issuer,
+  issuedDate,
+  coverImage {
+    "image": asset->url,
+    "lqip": asset->metadata.lqip,
+    alt,
+  },
+  tagline,
+  description
+}`;
+
+export const leetcodeBadgesQuery = groq`*[_type == "leetcodeBadge"] | order(sortOrder asc, _createdAt desc){
+  _id,
+  title,
+  about,
+  sortOrder,
+  badgeSvg {
+    "image": asset->url,
+    alt,
+  },
+}`;
+
 export const postsQuery = groq`*[_type == "Post"] | order(_createdAt desc){
   ${postField},
   date,

@@ -6,7 +6,9 @@ import { incognito } from "./assets/font/font";
 import { gitlabmono } from "./assets/font/font";
 import Navbar from "./components/global/Navbar";
 import Footer from "./components/global/Footer";
+import PortfolioChatbot from "./components/shared/PortfolioChatbot";
 import { Providers } from "./providers";
+import { umamiSiteId } from "@/lib/env.api";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,12 +17,12 @@ const inter = Inter({
 });
 
 const options = {
-  title: "Victor Eke | Software Developer",
+  title: "Ayush Kumar | Software Developer",
   description:
-    "Victor Eke is a Software Developer and Technical Writer who is passionate about building solutions and contributing to open source communities",
-  url: "https://victoreke.com",
+    "Ayush Kumar is a Software Developer and Technical Writer who is passionate about building solutions and contributing to open source communities",
+  url: "https://ayushkumar.com",
   ogImage:
-    "https://res.cloudinary.com/victoreke/image/upload/v1692635746/victoreke/og.png",
+    "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=90",
 };
 
 export const metadata: Metadata = {
@@ -30,7 +32,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: options.title,
     url: options.url,
-    siteName: "victoreke.com",
+    siteName: "ayushkumar.com",
     locale: "en-US",
     type: "website",
     description: options.description,
@@ -57,14 +59,17 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           {children}
+          <PortfolioChatbot />
           <Footer />
         </Providers>
       </body>
-      <Script
-        defer
-        src="https://cloud.umami.is/script.js"
-        data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
-      />
+      {umamiSiteId ? (
+        <Script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id={umamiSiteId}
+        />
+      ) : null}
     </html>
   );
 }

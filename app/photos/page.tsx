@@ -1,57 +1,27 @@
-import { Slide } from "../animation/Slide";
-import Image from "next/image";
 import { Metadata } from "next";
-import PageHeading from "@/app/components/shared/PageHeading";
-
-const images = [
-  {
-    id: "1",
-    src: "https://images.unsplash.com/photo-1585618256754-241cfe4e8113?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=100",
-  },
-  {
-    id: "2",
-    src: "https://images.unsplash.com/photo-1585619203238-70e7631cc672?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8OXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: "3",
-    src: "https://images.unsplash.com/photo-1585619443911-c2bb23fb2a49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
-  },
-];
+import ChessArena from "@/app/components/pages/ChessArena";
+import FavoriteSongs from "@/app/components/pages/FavoriteSongs";
+import FavoritePhotos from "@/app/components/pages/FavoritePhotos";
 
 export const metadata: Metadata = {
-  title: "Photos | Victor Eke",
-  metadataBase: new URL("https://victoreke.com/photos"),
-  description: "Explore photos taken by Victor Eke",
+  title: "Photos | Ayush Kumar",
+  description: "Explore photos uploaded and curated by Ayush Kumar",
   openGraph: {
-    title: "Photos | Victor Eke",
-    url: "https://victoreke.com/photos",
-    description: "Explore photos taken by Victor Eke",
+    title: "Photos | Ayush Kumar",
+    description: "Explore photos uploaded and curated by Ayush Kumar",
     images:
-      "https://res.cloudinary.com/victoreke/image/upload/v1692635149/victoreke/photos.png",
+      "/photos/WhatsApp%20Image%202026-06-28%20at%205.49.50%20PM%20(1).jpeg",
   },
 };
 
 export default function Photos() {
   return (
     <main className="max-w-7xl mx-auto md:px-16 px-6 lg:mt-32 mt-20">
-      <PageHeading
-        title="Photos"
-        description="This page is still under construction..."
-      />
-      <figure className="my-6">
-        <Slide delay={0.12} className="flex flex-wrap gap-2">
-          {images.map((image) => (
-            <Image
-              key={image.id}
-              src={image.src}
-              alt="playing guitar"
-              width={350}
-              height={800}
-              className="dark:bg-primary-bg bg-secondary-bg"
-            />
-          ))}
-        </Slide>
-      </figure>
+      <FavoriteSongs />
+      <div className="mt-24 md:mt-32">
+        <FavoritePhotos compact />
+      </div>
+      <ChessArena />
     </main>
   );
 }

@@ -62,6 +62,34 @@ export type ProjectType = {
   description: PortableTextBlock[];
 };
 
+export type CertificationType = {
+  _id: string;
+  name: string;
+  slug: string;
+  tagline: string;
+  issuer?: string;
+  issuedDate?: string;
+  credentialUrl?: string;
+  logo?: string;
+  coverImage?: {
+    image: string;
+    alt: string | null;
+    lqip: string;
+  };
+  description?: PortableTextBlock[];
+};
+
+export type LeetCodeBadgeType = {
+  _id: string;
+  title: string;
+  about: string;
+  sortOrder?: number;
+  badgeSvg: {
+    image: string;
+    alt: string | null;
+  };
+};
+
 export type PostType = {
   _id: string;
   _createdAt: string;

@@ -13,10 +13,14 @@ export default function Comments() {
       ? "transparent_dark"
       : "dark";
 
+  if (!giscusRepoId || !giscusCategoryId) {
+    return null;
+  }
+
   return (
     <Giscus
       id="comments"
-      repo="evavic44/victoreke.com"
+      repo="ayushcsh/ayushkumar.com"
       repoId={giscusRepoId}
       category="Announcements"
       categoryId={giscusCategoryId}

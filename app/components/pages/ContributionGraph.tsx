@@ -1,65 +1,223 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import GitHubCalendar from "react-github-calendar";
-import { github } from "@/app/data/contribution-graph-theme";
-import { useState, useEffect } from "react";
-import YearButton from "../shared/YearButton";
-import { getGitHubYears } from "@/app/utils/calculate-years";
-import EmptyState from "../shared/EmptyState";
 import { IoIosAnalytics } from "react-icons/io";
+import { github } from "@/app/data/contribution-graph-theme";
+import EmptyState from "../shared/EmptyState";
+import YearButton from "../shared/YearButton";
+
+type ContributionDay = {
+  date: string;
+  count: number;
+  level: number;
+  weekday: number;
+  week?: number;
+};
+
+type ContributionData = {
+  total: number;
+  days: ContributionDay[];
+};
+
+const CELL_SIZE = 13;
+const CELL_GAP = 4;
+const COLUMN_PITCH = CELL_SIZE + CELL_GAP;
+
+function withWeekIndexes(days: ContributionDay[]) {
+  if (!days.length) return [];
+
+  const start = new Date(`${days[0].date}T00:00:00Z`);
+  const firstWeekday = start.getUTCDay();
+
+  return days.map((day) => {
+    const date = new Date(`${day.date}T00:00:00Z`);
+    const offsetDays = Math.floor((date.getTime() - start.getTime()) / 86400000);
+
+    return {
+      ...day,
+      week: Math.floor((offsetDays + firstWeekday) / 7),
+    };
+  });
+}
+
+function getMonthLabels(days: ContributionDay[], includeStartMonth = false) {
+  if (!days.length) return [];
+
+  const labels: Array<{ month: string; week: number }> = [];
+  const start = new Date(`${days[0].date}T00:00:00Z`);
+  const end = new Date(`${days[days.length - 1].date}T00:00:00Z`);
+  const firstMonthOffset = includeStartMonth ? 0 : 1;
+
+  for (
+    let date = new Date(
+      Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + firstMonthOffset, 1)
+    );
+    date <= end;
+    date.setUTCMonth(date.getUTCMonth() + 1)
+  ) {
+    const dateString = date.toISOString().slice(0, 10);
+    const day = days.find((calendarDay) => calendarDay.date === dateString);
+
+    labels.push({
+      month: date.toLocaleString("en-US", {
+        month: "short",
+        timeZone: "UTC",
+      }),
+      week: day?.week ?? labels.length * 4,
+    });
+  }
+
+  return labels;
+}
 
 export default function ContributionGraph() {
-  const [calendarYear, setCalendarYear] = useState<number | undefined>(
-    undefined
+  const [contributions, setContributions] = useState<ContributionData | null>(
+    null
   );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const { theme, systemTheme } = useTheme();
   const [serverTheme, setServerTheme] = useState<"light" | "dark" | undefined>(
     undefined
   );
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear);
   const scheme =
     theme === "light" ? "light" : theme === "dark" ? "dark" : systemTheme;
+  const username = process.env.NEXT_PUBLIC_GITHUB_USERNAME;
+  const colors = github[serverTheme ?? "light"];
+  const isCurrentYear = selectedYear === currentYear;
+  const githubYears = [currentYear, 2025].filter(
+    (year, index, allYears) => allYears.indexOf(year) === index
+  );
 
-  // Set theme only after rendering to avoid mismatch between client and server
-  // https://github.com/vercel/next.js/issues/10608#issuecomment-589073831
   useEffect(() => {
     setServerTheme(scheme);
   }, [scheme]);
 
-  const today = new Date().getFullYear();
-  const username = process.env.NEXT_PUBLIC_GITHUB_USERNAME;
-  const joinYear = Number(process.env.NEXT_PUBLIC_GITHUB_JOIN_YEAR);
-  const years = getGitHubYears(joinYear);
+  useEffect(() => {
+    setIsLoading(true);
+    setError("");
 
-  if (!username || !joinYear)
+    fetch(
+      isCurrentYear
+        ? "/api/github-contributions?range=rolling"
+        : `/api/github-contributions?year=${selectedYear}`
+    )
+      .then(async (response) => {
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error ?? "Unable to load GitHub data");
+        }
+
+        setContributions(data);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setIsLoading(false));
+  }, [isCurrentYear, selectedYear]);
+
+  if (!username) {
     return (
       <EmptyState
         icon={<IoIosAnalytics />}
         title="Unable to load Contribution Graph"
-        message="We could not find any GitHub credentials added to the .env file. To display the graph, provide your username and the year you joined GitHub"
+        message="We could not find any GitHub credentials added to the .env file. To display the graph, provide your username."
       />
     );
+  }
+
+  if (error) {
+    return (
+      <EmptyState
+        icon={<IoIosAnalytics />}
+        title="Unable to load Contribution Graph"
+        message={error}
+      />
+    );
+  }
+
+  const days = withWeekIndexes(contributions?.days ?? []);
+  const monthLabels = getMonthLabels(days, !isCurrentYear);
 
   return (
-    <div className="flex xl:flex-row flex-col gap-4">
-      <div className="dark:bg-primary-bg bg-secondary-bg border dark:border-zinc-800 border-zinc-200 p-8 rounded-lg max-w-fit max-h-fit">
-        <GitHubCalendar
-          username={username}
-          theme={github}
-          colorScheme={serverTheme}
-          blockSize={13}
-          year={calendarYear}
-        />
+    <div className="flex flex-col items-start gap-4 xl:flex-row">
+      <div className="w-full max-w-[85%] min-w-0 dark:bg-primary-bg bg-secondary-bg border dark:border-zinc-800 border-zinc-200 p-8 rounded-lg overflow-x-auto xl:overflow-visible">
+        <div className="relative min-w-[920px]">
+          <div className="pl-1">
+            <div className="relative mb-2 h-4 text-xs dark:text-zinc-400 text-zinc-500">
+              {monthLabels.map(({ month, week }) => (
+                <span
+                  key={month}
+                  className="absolute"
+                  style={{ left: `${week * COLUMN_PITCH}px` }}
+                >
+                  {month}
+                </span>
+              ))}
+            </div>
+
+            <div
+              className="grid"
+              style={{
+                gridTemplateColumns: `repeat(53, ${CELL_SIZE}px)`,
+                gridTemplateRows: `repeat(7, ${CELL_SIZE}px)`,
+                gap: `${CELL_GAP}px`,
+              }}
+            >
+              {days.map((day) => (
+                <span
+                  key={day.date}
+                  title={`${day.count} contributions on ${day.date}`}
+                  className="rounded-sm"
+                  style={{
+                    height: `${CELL_SIZE}px`,
+                    width: `${CELL_SIZE}px`,
+                    backgroundColor: colors[day.level],
+                    gridColumn: (day.week ?? 0) + 1,
+                    gridRow: day.weekday + 1,
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="mt-3 flex items-center justify-between gap-4 text-sm font-medium dark:text-zinc-300 text-zinc-700">
+              <span>
+                {isLoading
+                  ? "Loading contributions..."
+                  : `${contributions?.total ?? 0} contributions ${
+                      isCurrentYear ? "in the last year" : `in ${selectedYear}`
+                    }`}
+              </span>
+              <div className="flex items-center gap-1 text-xs font-normal dark:text-zinc-400 text-zinc-500">
+                <span>Less</span>
+                {colors.map((color: string) => (
+                  <span
+                    key={color}
+                    className="rounded-sm"
+                    style={{
+                      backgroundColor: color,
+                      height: `${CELL_SIZE}px`,
+                      width: `${CELL_SIZE}px`,
+                    }}
+                  />
+                ))}
+                <span>More</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="flex justify-start xl:flex-col flex-row flex-wrap gap-2">
-        {/* Display only the last five years */}
-        {years.slice(0, 5).map((year) => (
+
+      <div className="flex w-full flex-row flex-wrap justify-start gap-2 xl:w-auto xl:flex-col xl:pt-0">
+        {githubYears.map((year) => (
           <YearButton
             key={year}
             year={year}
-            currentYear={calendarYear ?? today}
-            onClick={() =>
-              setCalendarYear(year === calendarYear ? undefined : year)
-            }
+            currentYear={selectedYear}
+            label={year === currentYear ? "Current" : undefined}
+            onClick={() => setSelectedYear(year)}
           />
         ))}
       </div>

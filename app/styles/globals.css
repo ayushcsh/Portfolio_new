@@ -34,3 +34,144 @@ h4 {
     stroke-dashoffset: 12433.8193359375;
   }
 }
+
+.chatbot-avatar-button {
+  animation: chatbot-avatar-float 3.2s ease-in-out infinite;
+}
+
+.chatbot-avatar-image {
+  animation: chatbot-avatar-wave 4.2s ease-in-out infinite;
+  transform-origin: 50% 88%;
+}
+
+.chatbot-hello-bubble {
+  position: absolute;
+  right: 4.75rem;
+  top: 0.15rem;
+  z-index: 10;
+  white-space: nowrap;
+  border: 1px solid rgba(51, 224, 146, 0.45);
+  border-radius: 999px;
+  background: rgba(24, 24, 27, 0.94);
+  color: white;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0.55rem 0.8rem;
+  animation: chatbot-hello-pop 4.2s ease-in-out forwards;
+}
+
+.chatbot-hello-bubble::after {
+  content: "";
+  position: absolute;
+  right: -0.3rem;
+  top: 50%;
+  height: 0.62rem;
+  width: 0.62rem;
+  border-right: 1px solid rgba(51, 224, 146, 0.45);
+  border-top: 1px solid rgba(51, 224, 146, 0.45);
+  background: rgba(24, 24, 27, 0.94);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.chatbot-wave {
+  display: inline-block;
+  animation: chatbot-wave-text 1.15s ease-in-out 0.25s 2;
+  transform-origin: 25% 80%;
+}
+
+.leetcode-badge-marquee {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 8%,
+    black 92%,
+    transparent
+  );
+}
+
+.leetcode-badge-track {
+  animation: leetcode-badge-scroll 60s linear infinite;
+}
+
+.leetcode-badge-marquee:hover .leetcode-badge-track,
+.leetcode-badge-marquee:focus-within .leetcode-badge-track {
+  animation-play-state: paused;
+}
+
+@keyframes leetcode-badge-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+
+@keyframes chatbot-avatar-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes chatbot-avatar-wave {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  8% {
+    transform: rotate(-4deg) scale(1.03);
+  }
+  16% {
+    transform: rotate(5deg) scale(1.03);
+  }
+  24% {
+    transform: rotate(-3deg) scale(1.02);
+  }
+  32% {
+    transform: rotate(2deg) scale(1.01);
+  }
+  42% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes chatbot-hello-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(0.5rem) translateY(0.3rem) scale(0.88);
+  }
+  12%,
+  82% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(0.35rem) translateY(0.15rem) scale(0.94);
+  }
+}
+
+@keyframes chatbot-wave-text {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(8deg);
+  }
+  40% {
+    transform: rotate(-8deg);
+  }
+  60% {
+    transform: rotate(7deg);
+  }
+  80% {
+    transform: rotate(-4deg);
+  }
+}

@@ -3,10 +3,12 @@ import { MouseEventHandler } from "react";
 export default function YearButton({
   year,
   currentYear,
+  label,
   onClick,
 }: {
   year: number;
   currentYear: number | undefined;
+  label?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }) {
   return (
@@ -19,7 +21,7 @@ export default function YearButton({
       }`}
       title={`View Graph for the year ${year}`}
     >
-      {year}
+      {label ?? year}
     </button>
   );
 }

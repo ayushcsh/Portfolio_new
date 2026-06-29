@@ -5,12 +5,13 @@ import { useState } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import {
   HiBeaker,
+  HiBadgeCheck,
   HiBookmarkAlt,
   HiCamera,
   HiOutlineX,
   HiUser,
 } from "react-icons/hi";
-import Logo from "../../../public/logo.png";
+import Logo from "../../../public/logo.svg";
 
 export default function MobileMenu() {
   const [navShow, setNavShow] = useState(false);
@@ -31,7 +32,12 @@ export default function MobileMenu() {
       icon: HiBookmarkAlt,
     },
     {
-      title: "Photos",
+      title: "Certifications",
+      href: "/certifications",
+      icon: HiBadgeCheck,
+    },
+    {
+      title: "Beyond Code",
       href: "/photos",
       icon: HiCamera,
     },
@@ -64,7 +70,7 @@ export default function MobileMenu() {
       >
         <div className="flex items-center justify-between mt-6 px-8">
           <Link href="/" onClick={onToggleNav}>
-            <Image src={Logo} width={35} height={35} alt="logo" />
+            <Image src={Logo} width={35} height={35} alt="logo" priority />
           </Link>
 
           <button
