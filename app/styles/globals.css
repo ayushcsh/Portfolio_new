@@ -1,3 +1,5 @@
+@import "prism.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,8 +7,6 @@
 html {
   scroll-behavior: smooth;
 }
-
-@import "prism.css";
 
 body {
   background-image: url("../../public/noise.png");
@@ -93,6 +93,29 @@ h4 {
 
 .leetcode-badge-track {
   animation: leetcode-badge-scroll 60s linear infinite;
+}
+
+.heatmap-grid {
+  --heatmap-cell-size: 9px;
+  --heatmap-cell-gap: 3px;
+  --heatmap-column-pitch: 12px;
+  min-width: calc((53 * var(--heatmap-cell-size)) + (52 * var(--heatmap-cell-gap)));
+}
+
+@media (min-width: 640px) {
+  .heatmap-grid {
+    --heatmap-cell-size: 11px;
+    --heatmap-cell-gap: 3px;
+    --heatmap-column-pitch: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .heatmap-grid {
+    --heatmap-cell-size: 13px;
+    --heatmap-cell-gap: 4px;
+    --heatmap-column-pitch: 17px;
+  }
 }
 
 .leetcode-badge-marquee:hover .leetcode-badge-track,

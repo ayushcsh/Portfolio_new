@@ -32,9 +32,6 @@ type CalendarDay = {
 };
 
 const greenScale = ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"];
-const HEATMAP_CELL_SIZE = 13;
-const HEATMAP_CELL_GAP = 4;
-const HEATMAP_COLUMN_PITCH = HEATMAP_CELL_SIZE + HEATMAP_CELL_GAP;
 
 function getRollingDays(calendar: Record<string, number>): CalendarDay[] {
   const timestamps = Object.keys(calendar)
@@ -229,22 +226,22 @@ export default function LeetCodeStats() {
   return (
     <section className="mt-32 mb-16 w-full">
       <Slide className="mb-8">
-        <h2 className="font-incognito text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
+        <h2 className="font-incognito text-3xl font-bold tracking-tight text-zinc-900 dark:text-white sm:text-4xl">
           LeetCode Progress
         </h2>
       </Slide>
 
       <Slide delay={0.05} className="mb-16">
         <div className="flex flex-col items-start gap-4 xl:flex-row">
-          <div className="w-full max-w-[85%] min-w-0 rounded-lg border border-zinc-200 bg-secondary-bg p-8 overflow-x-auto dark:border-zinc-800 dark:bg-primary-bg xl:overflow-visible">
-          <div className="relative min-w-[920px]">
+          <div className="w-full min-w-0 rounded-lg border border-zinc-200 bg-secondary-bg p-4 overflow-x-auto dark:border-zinc-800 dark:bg-primary-bg sm:p-6 lg:p-8 xl:overflow-visible">
+          <div className="heatmap-grid relative">
             <div className="pl-1">
               <div className="relative mb-2 h-4 text-xs text-zinc-500 dark:text-zinc-400">
                 {monthLabels.map(({ month, week }) => (
                   <span
                     key={month}
                     className="absolute"
-                    style={{ left: `${week * HEATMAP_COLUMN_PITCH}px` }}
+                    style={{ left: `calc(${week} * var(--heatmap-column-pitch))` }}
                   >
                     {month}
                   </span>
@@ -254,9 +251,9 @@ export default function LeetCodeStats() {
               <div
                 className="grid"
                 style={{
-                  gridTemplateColumns: `repeat(53, ${HEATMAP_CELL_SIZE}px)`,
-                  gridTemplateRows: `repeat(7, ${HEATMAP_CELL_SIZE}px)`,
-                  gap: `${HEATMAP_CELL_GAP}px`,
+                  gridTemplateColumns: "repeat(53, var(--heatmap-cell-size))",
+                  gridTemplateRows: "repeat(7, var(--heatmap-cell-size))",
+                  gap: "var(--heatmap-cell-gap)",
                 }}
               >
                 {days.map((day) => (
@@ -265,8 +262,8 @@ export default function LeetCodeStats() {
                     title={`${day.count} submissions on ${day.date}`}
                     className="rounded-sm"
                     style={{
-                      height: `${HEATMAP_CELL_SIZE}px`,
-                      width: `${HEATMAP_CELL_SIZE}px`,
+                      height: "var(--heatmap-cell-size)",
+                      width: "var(--heatmap-cell-size)",
                       backgroundColor: greenScale[getLevel(day.count)],
                       gridColumn: day.week + 1,
                       gridRow: day.weekday + 1,
@@ -275,7 +272,7 @@ export default function LeetCodeStats() {
                 ))}
               </div>
 
-              <div className="mt-3 flex items-center justify-between gap-4 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 <span>
                   {loading
                     ? "Loading submissions..."
@@ -283,7 +280,7 @@ export default function LeetCodeStats() {
                         isCurrentYear ? "in the last year" : `in ${selectedYear}`
                       }`}
                 </span>
-                <div className="flex items-center gap-1 text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                <div className="flex shrink-0 items-center gap-1 text-xs font-normal text-zinc-500 dark:text-zinc-400">
                   <span>Less</span>
                   {greenScale.map((color) => (
                     <span
@@ -291,8 +288,8 @@ export default function LeetCodeStats() {
                       className="rounded-sm"
                       style={{
                         backgroundColor: color,
-                        height: `${HEATMAP_CELL_SIZE}px`,
-                        width: `${HEATMAP_CELL_SIZE}px`,
+                        height: "var(--heatmap-cell-size)",
+                        width: "var(--heatmap-cell-size)",
                       }}
                     />
                   ))}

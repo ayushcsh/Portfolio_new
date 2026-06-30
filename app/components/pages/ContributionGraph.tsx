@@ -20,10 +20,6 @@ type ContributionData = {
   days: ContributionDay[];
 };
 
-const CELL_SIZE = 13;
-const CELL_GAP = 4;
-const COLUMN_PITCH = CELL_SIZE + CELL_GAP;
-
 function withWeekIndexes(days: ContributionDay[]) {
   if (!days.length) return [];
 
@@ -143,15 +139,15 @@ export default function ContributionGraph() {
 
   return (
     <div className="flex flex-col items-start gap-4 xl:flex-row">
-      <div className="w-full max-w-[85%] min-w-0 dark:bg-primary-bg bg-secondary-bg border dark:border-zinc-800 border-zinc-200 p-8 rounded-lg overflow-x-auto xl:overflow-visible">
-        <div className="relative min-w-[920px]">
+      <div className="w-full min-w-0 dark:bg-primary-bg bg-secondary-bg border dark:border-zinc-800 border-zinc-200 p-4 rounded-lg overflow-x-auto sm:p-6 lg:p-8 xl:overflow-visible">
+        <div className="heatmap-grid relative">
           <div className="pl-1">
             <div className="relative mb-2 h-4 text-xs dark:text-zinc-400 text-zinc-500">
               {monthLabels.map(({ month, week }) => (
                 <span
                   key={month}
                   className="absolute"
-                  style={{ left: `${week * COLUMN_PITCH}px` }}
+                  style={{ left: `calc(${week} * var(--heatmap-column-pitch))` }}
                 >
                   {month}
                 </span>
@@ -161,9 +157,9 @@ export default function ContributionGraph() {
             <div
               className="grid"
               style={{
-                gridTemplateColumns: `repeat(53, ${CELL_SIZE}px)`,
-                gridTemplateRows: `repeat(7, ${CELL_SIZE}px)`,
-                gap: `${CELL_GAP}px`,
+                gridTemplateColumns: "repeat(53, var(--heatmap-cell-size))",
+                gridTemplateRows: "repeat(7, var(--heatmap-cell-size))",
+                gap: "var(--heatmap-cell-gap)",
               }}
             >
               {days.map((day) => (
@@ -172,8 +168,8 @@ export default function ContributionGraph() {
                   title={`${day.count} contributions on ${day.date}`}
                   className="rounded-sm"
                   style={{
-                    height: `${CELL_SIZE}px`,
-                    width: `${CELL_SIZE}px`,
+                    height: "var(--heatmap-cell-size)",
+                    width: "var(--heatmap-cell-size)",
                     backgroundColor: colors[day.level],
                     gridColumn: (day.week ?? 0) + 1,
                     gridRow: day.weekday + 1,
@@ -182,7 +178,7 @@ export default function ContributionGraph() {
               ))}
             </div>
 
-            <div className="mt-3 flex items-center justify-between gap-4 text-sm font-medium dark:text-zinc-300 text-zinc-700">
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm font-medium dark:text-zinc-300 text-zinc-700">
               <span>
                 {isLoading
                   ? "Loading contributions..."
@@ -190,7 +186,7 @@ export default function ContributionGraph() {
                       isCurrentYear ? "in the last year" : `in ${selectedYear}`
                     }`}
               </span>
-              <div className="flex items-center gap-1 text-xs font-normal dark:text-zinc-400 text-zinc-500">
+              <div className="flex shrink-0 items-center gap-1 text-xs font-normal dark:text-zinc-400 text-zinc-500">
                 <span>Less</span>
                 {colors.map((color: string) => (
                   <span
@@ -198,8 +194,8 @@ export default function ContributionGraph() {
                     className="rounded-sm"
                     style={{
                       backgroundColor: color,
-                      height: `${CELL_SIZE}px`,
-                      width: `${CELL_SIZE}px`,
+                      height: "var(--heatmap-cell-size)",
+                      width: "var(--heatmap-cell-size)",
                     }}
                   />
                 ))}
