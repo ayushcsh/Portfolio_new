@@ -8,6 +8,7 @@ import {
   HiBadgeCheck,
   HiBookmarkAlt,
   HiCamera,
+  HiMail,
   HiOutlineX,
   HiUser,
 } from "react-icons/hi";
@@ -40,6 +41,11 @@ export default function MobileMenu() {
       title: "Beyond Code",
       href: "/photos",
       icon: HiCamera,
+    },
+    {
+      title: "Contact",
+      href: "/contact",
+      icon: HiMail,
     },
   ];
 

@@ -355,11 +355,11 @@ export default function ChessArena() {
       </Slide>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-zinc-950/85 px-4 py-6 backdrop-blur-md sm:px-6">
-          <div className="mx-auto max-w-7xl rounded-xl border border-zinc-800 bg-white p-4 shadow-2xl shadow-zinc-950/60 dark:bg-zinc-950 sm:p-5">
-            <div className="mb-5 flex flex-col gap-4 border-b border-zinc-200 pb-4 dark:border-zinc-800 md:flex-row md:items-center md:justify-between">
+        <div className="fixed inset-0 z-50 overflow-hidden bg-zinc-950/85 p-2 backdrop-blur-md sm:p-3">
+          <div className="mx-auto flex h-[calc(100dvh-1rem)] max-w-6xl flex-col rounded-xl border border-zinc-800 bg-white p-3 shadow-2xl shadow-zinc-950/60 dark:bg-zinc-950 sm:h-[calc(100dvh-1.5rem)]">
+            <div className="mb-3 flex flex-col gap-3 border-b border-zinc-200 pb-3 dark:border-zinc-800 md:flex-row md:items-center md:justify-between">
               <div>
-                <h2 className="font-incognito text-3xl font-bold tracking-tight">
+                <h2 className="font-incognito text-2xl font-bold tracking-tight">
                   The 64 Boxes
                 </h2>
                 <p className="mt-1 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase text-zinc-500 dark:text-zinc-400">
@@ -376,7 +376,7 @@ export default function ChessArena() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <div className="flex rounded-lg border border-zinc-200 bg-zinc-50 p-1 text-sm font-semibold dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="flex rounded-lg border border-zinc-200 bg-zinc-50 p-1 text-xs font-semibold dark:border-zinc-800 dark:bg-zinc-900">
                   {(["casual", "sharp"] as const).map((level) => (
                     <button
                       key={level}
@@ -395,7 +395,7 @@ export default function ChessArena() {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="grid h-10 w-10 place-items-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500 transition hover:border-primary-color hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:text-white"
+                  className="grid h-9 w-9 place-items-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500 transition hover:border-primary-color hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:text-white"
                   aria-label="Close chess board"
                 >
                   <FaTimes aria-hidden="true" />
@@ -403,10 +403,10 @@ export default function ChessArena() {
               </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-          <div className="mx-auto w-full max-w-[660px]">
-            <div className="rounded-xl border border-[#4b3928] bg-[#261b12] p-3 shadow-2xl shadow-zinc-950/25 ring-1 ring-white/10 dark:shadow-zinc-950/50">
-              <div className="rounded-lg border border-black/35 bg-[#2d2117] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-18px_42px_rgba(0,0,0,0.36)]">
+            <div className="grid min-h-0 flex-1 gap-4 md:grid-cols-[minmax(0,1fr)_280px] md:items-start lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-11rem),560px)]">
+            <div className="rounded-xl border border-[#4b3928] bg-[#261b12] p-2 shadow-2xl shadow-zinc-950/25 ring-1 ring-white/10 dark:shadow-zinc-950/50">
+              <div className="rounded-lg border border-black/35 bg-[#2d2117] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-18px_42px_rgba(0,0,0,0.36)]">
                 <div className="grid aspect-square grid-cols-8 overflow-hidden rounded-md border border-black/55 bg-zinc-900 shadow-[0_18px_45px_rgba(0,0,0,0.28)]">
                 {boardSquares.map((square) => {
                   const piece = game.get(square);
@@ -427,7 +427,7 @@ export default function ChessArena() {
                         onClick={() => handleSquareClick(square)}
                         onMouseEnter={() => setHoveredSquare(square)}
                         onMouseLeave={() => setHoveredSquare(null)}
-                        className={`group relative grid aspect-square place-items-center overflow-hidden text-3xl transition duration-200 sm:text-4xl md:text-5xl ${
+                        className={`group relative grid aspect-square place-items-center overflow-hidden text-2xl transition duration-200 sm:text-3xl md:text-4xl ${
                           lightSquare
                             ? "bg-[#eee0c4] text-zinc-950"
                             : "bg-[#2f6f58] text-zinc-950"
@@ -495,16 +495,16 @@ export default function ChessArena() {
                   })}
                 </div>
               </div>
-              <div className="mt-2 flex items-center justify-between gap-3 px-1 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+              <div className="mt-1.5 flex items-center justify-between gap-3 px-1 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
                 <span className="truncate">{selectedSquare ? `Selected ${selectedSquare}` : "Tap a white piece to start"}</span>
                 <span className="shrink-0 text-right text-tertiary-color dark:text-primary-color">{botThinking ? "Bot calculating..." : status}</span>
               </div>
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-zinc-200 bg-white/90 p-4 shadow-2xl shadow-zinc-950/10 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-zinc-950/25 lg:sticky lg:top-5">
-            <div className="flex items-center gap-3 border-b border-zinc-200 pb-4 dark:border-zinc-800">
-              <span className="relative h-14 w-14 overflow-hidden rounded-full bg-zinc-900 shadow-lg shadow-zinc-950/10 ring-1 ring-zinc-200 dark:shadow-zinc-950/30 dark:ring-zinc-800">
+          <aside className="min-h-0 rounded-xl border border-zinc-200 bg-white/90 p-3 shadow-2xl shadow-zinc-950/10 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-zinc-950/25">
+            <div className="flex items-center gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-800">
+              <span className="relative h-10 w-10 overflow-hidden rounded-full bg-zinc-900 shadow-lg shadow-zinc-950/10 ring-1 ring-zinc-200 dark:shadow-zinc-950/30 dark:ring-zinc-800">
                 <Image
                   src="/chatbot-avatar.png"
                   alt=""
@@ -514,10 +514,10 @@ export default function ChessArena() {
                 />
               </span>
               <div>
-                <h3 className="font-incognito text-xl font-bold tracking-tight">
+                <h3 className="font-incognito text-lg font-bold tracking-tight">
                   Ayush Bot
                 </h3>
-                <p className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
                   <span>{status}</span>
                   {botThinking ? (
                     <span className="flex gap-1" aria-hidden="true">
@@ -530,11 +530,11 @@ export default function ChessArena() {
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-2">
+            <div className="mt-3 grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={resetGame}
-                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
+                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-xs font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
                 title="New game"
               >
                 <FaRedoAlt aria-hidden="true" className="transition group-hover:rotate-180" />
@@ -543,7 +543,7 @@ export default function ChessArena() {
               <button
                 type="button"
                 onClick={() => setIsFlipped((currentValue) => !currentValue)}
-                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
+                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-xs font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
                 title="Flip board"
               >
                 <FaExchangeAlt aria-hidden="true" className="transition group-hover:scale-110" />
@@ -553,7 +553,7 @@ export default function ChessArena() {
                 type="button"
                 onClick={showHint}
                 disabled={game.turn() !== humanColor || game.isGameOver() || botThinking}
-                className="group flex items-center justify-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm font-semibold text-amber-700 transition hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white hover:shadow-lg hover:shadow-amber-300/15 disabled:cursor-not-allowed disabled:opacity-45 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200 dark:hover:bg-amber-400/15"
+                className="group flex items-center justify-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2 py-2 text-xs font-semibold text-amber-700 transition hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white hover:shadow-lg hover:shadow-amber-300/15 disabled:cursor-not-allowed disabled:opacity-45 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200 dark:hover:bg-amber-400/15"
                 title="Show hint"
               >
                 <FaLightbulb aria-hidden="true" className="transition group-hover:scale-110" />
@@ -563,7 +563,7 @@ export default function ChessArena() {
                 type="button"
                 onClick={undoLastTurn}
                 disabled={!history.length || botThinking}
-                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 disabled:cursor-not-allowed disabled:opacity-45 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
+                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-xs font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 disabled:cursor-not-allowed disabled:opacity-45 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
                 title="Undo turn"
               >
                 <FaUndoAlt aria-hidden="true" className="transition group-hover:-rotate-12" />
@@ -571,16 +571,16 @@ export default function ChessArena() {
               </button>
             </div>
 
-            <div className="mt-5 grid gap-3 text-sm">
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-primary-bg">
-                <div className="mb-2 flex items-center gap-2 font-medium">
+            <div className="mt-3 grid gap-2 text-xs">
+              <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-primary-bg">
+                <div className="mb-1.5 flex items-center gap-2 font-medium">
                   <FaUserAlt aria-hidden="true" className="text-tertiary-color dark:text-primary-color" />
                   <span>You captured</span>
                   <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
                     +{userMaterial}
                   </span>
                 </div>
-                <div className="flex min-h-8 flex-wrap gap-1 text-2xl leading-none">
+                <div className="flex min-h-7 flex-wrap gap-1 text-xl leading-none">
                   {userCapturedPieces.length
                     ? userCapturedPieces.map((piece, index) => {
                         const CapturedIcon = pieceIcons[piece];
@@ -588,7 +588,7 @@ export default function ChessArena() {
                         return (
                           <span
                             key={`${piece}-${index}`}
-                            className="grid h-8 w-8 place-items-center rounded-md bg-zinc-950 text-primary-color shadow-line-light dark:bg-zinc-950 dark:shadow-line-dark"
+                            className="grid h-7 w-7 place-items-center rounded-md bg-zinc-950 text-primary-color shadow-line-light dark:bg-zinc-950 dark:shadow-line-dark"
                           >
                             <CapturedIcon aria-hidden="true" className="h-4 w-4" />
                           </span>
@@ -598,15 +598,15 @@ export default function ChessArena() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-primary-bg">
-                <div className="mb-2 flex items-center gap-2 font-medium">
+              <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-primary-bg">
+                <div className="mb-1.5 flex items-center gap-2 font-medium">
                   <FaRobot aria-hidden="true" className="text-tertiary-color dark:text-primary-color" />
                   <span>Bot captured</span>
                   <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
                     +{botMaterial}
                   </span>
                 </div>
-                <div className="flex min-h-8 flex-wrap gap-1 text-2xl leading-none">
+                <div className="flex min-h-7 flex-wrap gap-1 text-xl leading-none">
                   {botCapturedPieces.length
                     ? botCapturedPieces.map((piece, index) => {
                         const CapturedIcon = pieceIcons[piece];
@@ -614,7 +614,7 @@ export default function ChessArena() {
                         return (
                           <span
                             key={`${piece}-${index}`}
-                            className="grid h-8 w-8 place-items-center rounded-md bg-white text-zinc-950 shadow-line-light dark:bg-white dark:shadow-line-dark"
+                            className="grid h-7 w-7 place-items-center rounded-md bg-white text-zinc-950 shadow-line-light dark:bg-white dark:shadow-line-dark"
                           >
                             <CapturedIcon aria-hidden="true" className="h-4 w-4" />
                           </span>
@@ -625,8 +625,8 @@ export default function ChessArena() {
               </div>
             </div>
 
-            <div className="mt-5">
-              <div className="mb-2 flex items-center justify-between text-sm font-semibold">
+            <div className="mt-3">
+              <div className="mb-1.5 flex items-center justify-between text-xs font-semibold">
                 <span className="flex items-center gap-2">
                   <FaChessKnight aria-hidden="true" className="text-tertiary-color dark:text-primary-color" />
                   Moves
@@ -636,7 +636,7 @@ export default function ChessArena() {
                   Live
                 </span>
               </div>
-              <div className="max-h-48 overflow-y-auto rounded-xl border border-zinc-200 bg-zinc-50 p-3 text-sm shadow-inner dark:border-zinc-800 dark:bg-zinc-950">
+              <div className="max-h-[18dvh] overflow-y-auto rounded-lg border border-zinc-200 bg-zinc-50 p-2 text-xs shadow-inner dark:border-zinc-800 dark:bg-zinc-950">
                 {history.length ? (
                   <ol className="space-y-1.5">
                     {movePairs(history).map((pair, index) => (

@@ -27,6 +27,10 @@ export default function Navbar() {
       title: "Beyond Code",
       href: "/photos",
     },
+    {
+      title: "Contact",
+      href: "/contact",
+    },
   ];
 
   return (

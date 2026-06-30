@@ -46,9 +46,8 @@ function renderCurrentlyHackingIntro() {
         aria-hidden="true"
       />
       <p className="my-1">
-        If you ever spot me in the wild, don&apos;t hesitate to say hello!
-        Let&apos;s grab a drink and geek-out over the latest advancements in
-        front-end development or discuss our favorite programming language.
+        If you ever spot me in the wild, don&apos;t be shy&mdash;come say hi.
+        Worst case, we share an awkward laugh. Best case, we leave as friends.
       </p>
       <p className="mt-2 mb-0"></p>
     </blockquote>
