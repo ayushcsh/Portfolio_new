@@ -42,6 +42,7 @@ export default function PortfolioChatbot() {
   const [voiceLoadingId, setVoiceLoadingId] = useState<string | null>(null);
   const [showGreeting, setShowGreeting] = useState(true);
   const [avatarSrc, setAvatarSrc] = useState(chatAvatarSrc);
+  const [isChessOpen, setIsChessOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -49,6 +50,19 @@ export default function PortfolioChatbot() {
     if (!isOpen) return;
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [isOpen, messages, isLoading]);
+
+  useEffect(() => {
+    function handleChessOpen(event: Event) {
+      const detail = (event as CustomEvent<{ isOpen?: boolean }>).detail;
+      setIsChessOpen(Boolean(detail?.isOpen));
+    }
+
+    window.addEventListener("ayush:chess-open", handleChessOpen);
+
+    return () => {
+      window.removeEventListener("ayush:chess-open", handleChessOpen);
+    };
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -181,6 +195,8 @@ export default function PortfolioChatbot() {
       setVoiceLoadingId(null);
     }
   }
+
+  if (isChessOpen) return null;
 
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">

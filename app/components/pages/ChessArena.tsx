@@ -229,6 +229,18 @@ export default function ChessArena() {
   const gameOutcome = getGameOutcome(game);
 
   useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent("ayush:chess-open", { detail: { isOpen } })
+    );
+
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent("ayush:chess-open", { detail: { isOpen: false } })
+      );
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
     if (!isOpen) {
       setBotThinking(false);
       return;
@@ -558,11 +570,11 @@ export default function ChessArena() {
                 </div>
               </div>
 
-              <div className="absolute right-3 top-1/2 z-30 grid w-14 -translate-y-1/2 grid-cols-1 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/85 text-center text-[10px] font-bold text-zinc-300 shadow-2xl shadow-black/35 backdrop-blur sm:w-16 sm:text-xs">
+              <div className="absolute bottom-3 left-1/2 z-30 grid w-[min(calc(100%-1.5rem),23rem)] -translate-x-1/2 grid-cols-4 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/85 text-center text-[10px] font-bold text-zinc-300 shadow-2xl shadow-black/35 backdrop-blur sm:right-3 sm:top-1/2 sm:left-auto sm:bottom-auto sm:w-16 sm:-translate-x-0 sm:-translate-y-1/2 sm:grid-cols-1 sm:text-xs">
                 <button
                   type="button"
                   onClick={resetGame}
-                  className="flex flex-col items-center gap-1 border-b border-zinc-800 px-2 py-3 transition hover:bg-white/10"
+                  className="flex flex-col items-center gap-1 border-r border-zinc-800 px-2 py-3 transition hover:bg-white/10 sm:border-r-0 sm:border-b"
                   title="New game"
                 >
                   <FaRedoAlt aria-hidden="true" className="text-lg" />
@@ -571,7 +583,7 @@ export default function ChessArena() {
                 <button
                   type="button"
                   onClick={() => setIsFlipped((currentValue) => !currentValue)}
-                  className="flex flex-col items-center gap-1 border-b border-zinc-800 px-2 py-3 transition hover:bg-white/10"
+                  className="flex flex-col items-center gap-1 border-r border-zinc-800 px-2 py-3 transition hover:bg-white/10 sm:border-r-0 sm:border-b"
                   title="Flip board"
                 >
                   <FaExchangeAlt aria-hidden="true" className="text-lg" />
@@ -581,7 +593,7 @@ export default function ChessArena() {
                   type="button"
                   onClick={showHint}
                   disabled={game.turn() !== humanColor || game.isGameOver() || botThinking}
-                  className="flex flex-col items-center gap-1 border-b border-zinc-800 px-2 py-3 text-amber-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
+                  className="flex flex-col items-center gap-1 border-r border-zinc-800 px-2 py-3 text-amber-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45 sm:border-r-0 sm:border-b"
                   title="Show hint"
                 >
                   <FaLightbulb aria-hidden="true" className="text-lg" />
