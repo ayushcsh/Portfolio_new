@@ -49,14 +49,14 @@ export const socialLinks = [
   {
     id: 8,
     name: "Pinterest",
-    url: "https://www.pinterest.com/ayushcsh/",
+    url: "https://in.pinterest.com/ayushXOX/",
     icon: SiPinterest,
     status: "social",
   },
   {
     id: 9,
     name: "Peerlist",
-    url: "https://peerlist.io/ayushcsh",
+    url: "https://peerlist.io/ayushkumar_nov",
     icon: SiPeerlist,
     status: "social",
   },
