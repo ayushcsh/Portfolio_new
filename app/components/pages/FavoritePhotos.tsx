@@ -20,7 +20,7 @@ const galleryPhotos = [
   { file: "WhatsApp Image 2026-06-28 at 5.54.15 PM.jpeg", width: 3024, height: 4032 },
 ].map((photo, index) => ({
   id: `uploaded-photo-${index + 1}`,
-  src: encodeURI(`/photos/${photo.file}`),
+  src: `/photos/${encodeURIComponent(photo.file)}`,
   alt: `Ayush Kumar gallery photo ${index + 1}`,
   caption: `Frame ${String(index + 1).padStart(2, "0")}`,
   width: photo.width,
@@ -47,7 +47,7 @@ export default function FavoritePhotos({ compact = false }: FavoritePhotosProps)
 
           {!compact && (
             <Link
-              href="/photos"
+              href="/Beyondcode"
               className="w-fit text-sm font-medium text-tertiary-color transition hover:text-zinc-900 dark:text-primary-color dark:hover:text-white"
             >
               View photos

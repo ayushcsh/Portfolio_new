@@ -39,7 +39,7 @@ export default function ContactEngagement() {
         setShowThanks(true);
         setGiftImageSrc("/like-for-you.png");
         setShowGift(true);
-        window.setTimeout(() => setShowThanks(false), 2600);
+        window.setTimeout(() => setShowThanks(false), 3600);
         window.setTimeout(() => setShowGift(false), 3600);
       }
 
@@ -51,6 +51,14 @@ export default function ContactEngagement() {
     <div className="relative flex flex-col items-center gap-3 text-center text-sm">
       {showGift ? (
         <div className="pointer-events-none fixed bottom-0 left-0 z-50 like-gift-slide">
+          {showThanks ? (
+            <div
+              role="status"
+              className="absolute -top-10 right-0 translate-x-1/3 w-max max-w-[min(18rem,calc(100vw-3rem))] rounded-md border border-red-100 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-xl shadow-zinc-950/10 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 sm:translate-x-1/2"
+            >
+              Thanks for the love. You made this page a little warmer.
+            </div>
+          ) : null}
           <Image
             src={giftImageSrc}
             alt=""
@@ -63,40 +71,35 @@ export default function ContactEngagement() {
         </div>
       ) : null}
 
-      {showThanks ? (
-        <div
-          role="status"
-          className="absolute bottom-full left-0 mb-3 w-max max-w-[min(18rem,calc(100vw-3rem))] rounded-md border border-red-100 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-xl shadow-zinc-950/10 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200"
-        >
-          Thanks for the love. You made this page a little warmer.
-        </div>
-      ) : null}
-
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm mt-18 text-zinc-500 dark:text-zinc-400">
         If this portfolio made you smile, leave a little like.
       </p>
 
-      <div className="flex flex-wrap items-center justify-center gap-3">
+      <div className="flex flex-col items-center justify-center gap-3">
         <button
           type="button"
           onClick={toggleLike}
           aria-pressed={liked}
-          className="inline-flex h-10 items-center gap-x-2 rounded-md border border-zinc-200 bg-zinc-50 px-4 font-incognito font-semibold text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 focus:outline-none focus:ring-2 focus:ring-zinc-300 focus:ring-offset-2 focus:ring-offset-white dark:border-zinc-800 dark:bg-primary-bg dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white dark:focus:ring-zinc-700 dark:focus:ring-offset-zinc-900"
+          className={`inline-flex h-12 items-center gap-x-2.5 rounded-lg border px-6 font-incognito text-base font-bold shadow-line-light transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 focus:ring-offset-white dark:shadow-line-dark dark:focus:ring-red-500/40 dark:focus:ring-offset-zinc-900 ${
+            liked
+              ? "border-red-200 bg-red-50 text-red-600 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300"
+              : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-red-200 hover:text-red-500 dark:border-zinc-800 dark:bg-primary-bg dark:text-zinc-200 dark:hover:border-red-500/30 dark:hover:text-red-300"
+          }`}
         >
           {liked ? (
-            <BiSolidHeart className="text-lg text-red-500" aria-hidden="true" />
+            <BiSolidHeart className="text-xl text-red-500" aria-hidden="true" />
           ) : (
-            <BiHeart className="text-lg" aria-hidden="true" />
+            <BiHeart className="text-xl text-red-500" aria-hidden="true" />
           )}
-          {liked ? "Liked" : "Like"}
+          {liked ? "Liked" : "Like this page"}
         </button>
 
         <div
-          className="inline-flex h-10 items-center gap-x-2 rounded-md border border-zinc-200 bg-zinc-50 px-4 font-incognito font-semibold text-zinc-700 dark:border-zinc-800 dark:bg-primary-bg dark:text-zinc-300"
+          className="inline-flex items-center gap-x-1.5 text-[11px] font-medium text-zinc-400 opacity-60 dark:text-zinc-600"
           title={`${views.toLocaleString()} contact page views`}
         >
-          <BiShow className="text-lg" aria-hidden="true" />
-          <span>{views.toLocaleString()} views</span>
+          <BiShow className="text-sm" aria-hidden="true" />
+          <span>{views.toLocaleString()} quiet visits</span>
         </div>
       </div>
     </div>

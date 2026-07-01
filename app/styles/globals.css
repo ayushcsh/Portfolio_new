@@ -85,6 +85,62 @@ h4 {
   animation: like-gift-slide 3.6s ease-in-out forwards;
 }
 
+.chess-win-board {
+  animation: chess-win-board 1.4s ease-in-out infinite;
+}
+
+.chess-confetti {
+  position: absolute;
+  inset: -0.75rem;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.chess-confetti span {
+  position: absolute;
+  top: -0.75rem;
+  left: calc(var(--x) * 1%);
+  width: 0.42rem;
+  height: 0.72rem;
+  border-radius: 0.12rem;
+  background: var(--c);
+  opacity: 0;
+  transform: translateY(-1rem) rotate(0deg);
+  animation: chess-confetti-drop 1.65s ease-out infinite;
+  animation-delay: var(--d);
+}
+
+.chess-confetti span:nth-child(3n + 1) {
+  --c: #33e092;
+}
+
+.chess-confetti span:nth-child(3n + 2) {
+  --c: #facc15;
+}
+
+.chess-confetti span:nth-child(3n + 3) {
+  --c: #ffffff;
+}
+
+.chess-confetti span:nth-child(1) { --x: 5; --d: 0s; }
+.chess-confetti span:nth-child(2) { --x: 13; --d: 0.18s; }
+.chess-confetti span:nth-child(3) { --x: 21; --d: 0.05s; }
+.chess-confetti span:nth-child(4) { --x: 29; --d: 0.28s; }
+.chess-confetti span:nth-child(5) { --x: 37; --d: 0.12s; }
+.chess-confetti span:nth-child(6) { --x: 45; --d: 0.34s; }
+.chess-confetti span:nth-child(7) { --x: 53; --d: 0.08s; }
+.chess-confetti span:nth-child(8) { --x: 61; --d: 0.24s; }
+.chess-confetti span:nth-child(9) { --x: 69; --d: 0.02s; }
+.chess-confetti span:nth-child(10) { --x: 77; --d: 0.2s; }
+.chess-confetti span:nth-child(11) { --x: 85; --d: 0.1s; }
+.chess-confetti span:nth-child(12) { --x: 93; --d: 0.3s; }
+.chess-confetti span:nth-child(13) { --x: 9; --d: 0.42s; }
+.chess-confetti span:nth-child(14) { --x: 25; --d: 0.5s; }
+.chess-confetti span:nth-child(15) { --x: 41; --d: 0.46s; }
+.chess-confetti span:nth-child(16) { --x: 57; --d: 0.38s; }
+.chess-confetti span:nth-child(17) { --x: 73; --d: 0.54s; }
+.chess-confetti span:nth-child(18) { --x: 89; --d: 0.44s; }
+
 .leetcode-badge-marquee {
   mask-image: linear-gradient(
     to right,
@@ -216,5 +272,29 @@ h4 {
   100% {
     opacity: 0;
     transform: translateX(-110%) translateY(2.5rem) rotate(-5deg) scale(0.96);
+  }
+}
+
+@keyframes chess-win-board {
+  0%,
+  100% {
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.28), 0 0 0 rgba(51, 224, 146, 0);
+  }
+  50% {
+    box-shadow: 0 22px 55px rgba(0, 0, 0, 0.28), 0 0 34px rgba(51, 224, 146, 0.5);
+  }
+}
+
+@keyframes chess-confetti-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-1rem) rotate(0deg);
+  }
+  14% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(8rem) rotate(220deg);
   }
 }

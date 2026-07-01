@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { Chess, type Move, type PieceSymbol, type Square } from "chess.js";
 import type { IconType } from "react-icons";
 import {
-  FaBolt,
   FaChessBishop,
   FaChessKing,
   FaChessKnight,
@@ -16,10 +14,8 @@ import {
   FaLightbulb,
   FaPlay,
   FaRedoAlt,
-  FaRobot,
   FaTimes,
   FaUndoAlt,
-  FaUserAlt,
 } from "react-icons/fa";
 import { Slide } from "@/app/animation/Slide";
 
@@ -29,6 +25,14 @@ type LastMove = {
   from: Square;
   to: Square;
 };
+
+type GameOutcome =
+  | {
+      tone: "win" | "loss" | "draw";
+      title: string;
+      message: string;
+    }
+  | null;
 
 const humanColor = "w";
 const botColor = "b";
@@ -73,16 +77,6 @@ function getBoardSquares(isFlipped: boolean) {
   );
 }
 
-function getCapturedPieces(history: Move[], color: typeof humanColor | typeof botColor) {
-  return history
-    .filter((move) => move.color === color && move.captured)
-    .map((move) => move.captured as PieceSymbol);
-}
-
-function getMaterialScore(pieces: PieceSymbol[]) {
-  return pieces.reduce((total, piece) => total + pieceValues[piece], 0);
-}
-
 function getGameStatus(game: Chess, botThinking: boolean) {
   if (game.isCheckmate()) {
     return game.turn() === humanColor
@@ -96,6 +90,40 @@ function getGameStatus(game: Chess, botThinking: boolean) {
   if (game.isCheck()) return "Your king is in check.";
 
   return "Your move.";
+}
+
+function getGameOutcome(game: Chess): GameOutcome {
+  if (game.isCheckmate()) {
+    return game.turn() === humanColor
+      ? {
+          tone: "loss",
+          title: "Ayush Bot wins",
+          message: "Checkmate. Reset the board and try a cleaner line.",
+        }
+      : {
+          tone: "win",
+          title: "You won!",
+          message: "Checkmate. That one deserves a little victory glow.",
+        };
+  }
+
+  if (game.isStalemate()) {
+    return {
+      tone: "draw",
+      title: "Stalemate",
+      message: "No legal moves left. That match ends even.",
+    };
+  }
+
+  if (game.isDraw()) {
+    return {
+      tone: "draw",
+      title: "Draw",
+      message: "The board could not find a winner this time.",
+    };
+  }
+
+  return null;
 }
 
 function scoreMove(fen: string, move: Move, difficulty: Difficulty) {
@@ -197,14 +225,8 @@ export default function ChessArena() {
   const legalTargets = selectedSquare
     ? game.moves({ square: selectedSquare, verbose: true }).map((move) => move.to)
     : [];
-  const userCapturedPieces = getCapturedPieces(history, humanColor);
-  const botCapturedPieces = getCapturedPieces(history, botColor);
-  const userMaterial = getMaterialScore(userCapturedPieces);
-  const botMaterial = getMaterialScore(botCapturedPieces);
-  const materialLead = userMaterial - botMaterial;
-  const currentMoveNumber = Math.max(1, Math.floor(history.length / 2) + 1);
-  const lastSan = history[history.length - 1]?.san;
   const status = getGameStatus(game, botThinking);
+  const gameOutcome = getGameOutcome(game);
 
   useEffect(() => {
     if (!isOpen) {
@@ -332,336 +354,251 @@ export default function ChessArena() {
   return (
     <section className="mt-24 md:mt-32">
       <Slide delay={0.2}>
-        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="font-incognito text-4xl font-bold tracking-tight">
-              The 64 Boxes
-            </h2>
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
-              A quiet little board for slow moves, sharp ideas, and quick
-              matches against Ayush Bot.
-            </p>
-          </div>
+        <div className="group relative mb-16 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/80 p-5 shadow-line-light transition duration-500 hover:-translate-y-1 hover:border-primary-color/60 hover:shadow-2xl hover:shadow-primary-color/10 dark:border-zinc-800 dark:bg-primary-bg dark:shadow-line-dark sm:mb-20">
+          <div className="absolute inset-0 bg-noise opacity-60" aria-hidden="true" />
+          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-primary-color/10 blur-3xl transition duration-500 group-hover:bg-primary-color/20" aria-hidden="true" />
 
-          <button
-            type="button"
-            onClick={() => setIsOpen(true)}
-            className="group flex w-fit items-center justify-center gap-2 rounded-lg border border-primary-color bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary-color/15 transition hover:-translate-y-0.5 hover:shadow-primary-color/25 dark:bg-primary-color dark:text-zinc-950"
-          >
-            <FaPlay aria-hidden="true" className="text-xs transition group-hover:translate-x-0.5" />
-            Play chess
-          </button>
+          <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_220px] lg:items-center">
+            <div>
+              <h2 className="font-incognito text-4xl font-bold tracking-tight">
+                The 64 Boxes
+              </h2>
+              <p className="mt-3 max-w-2xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+                The little place I come back to when I feel low, one calm move
+                at a time.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setIsOpen(true)}
+                className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg border border-primary-color bg-zinc-950 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-primary-color/15 transition hover:-translate-y-0.5 hover:shadow-primary-color/25 dark:bg-primary-color dark:text-zinc-950"
+              >
+                <FaPlay aria-hidden="true" className="text-xs transition group-hover:translate-x-0.5" />
+                Play chess
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsOpen(true)}
+              className="relative mx-auto grid aspect-square w-full max-w-[220px] grid-cols-4 overflow-hidden rounded-lg border border-zinc-300 bg-zinc-900 shadow-2xl shadow-zinc-950/15 transition duration-500 hover:rotate-1 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-primary-color dark:border-zinc-700"
+              aria-label="Open chess board"
+            >
+              {Array.from({ length: 16 }).map((_, index) => (
+                <span
+                  key={index}
+                  className={index % 2 === Math.floor(index / 4) % 2 ? "bg-[#eee0c4]" : "bg-[#76a05a]"}
+                  aria-hidden="true"
+                />
+              ))}
+              <FaChessKnight className="absolute left-[16%] top-[58%] h-10 w-10 text-[#fff8e8] drop-shadow-[0_3px_2px_rgba(0,0,0,0.55)] transition duration-500 group-hover:-translate-y-2 group-hover:translate-x-3 group-hover:rotate-6" aria-hidden="true" />
+              <FaChessQueen className="absolute right-[16%] top-[14%] h-11 w-11 text-zinc-950 drop-shadow-[0_2px_1px_rgba(255,255,255,0.25)] transition duration-500 group-hover:translate-y-2 group-hover:-translate-x-2 group-hover:-rotate-6" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </Slide>
 
+      <Slide delay={0.26}>
+        <blockquote
+          className="mx-auto mt-16 max-w-3xl text-center text-3xl leading-tight text-zinc-700 dark:text-zinc-200 sm:mt-20 sm:text-4xl"
+          style={{ fontFamily: '"Segoe Script", "Brush Script MT", cursive' }}
+        >
+          <p>
+            What if I fall? Oh but my darling, what if you fly?
+          </p>
+          <footer className="mt-3 font-inter text-sm font-semibold text-zinc-500 dark:text-zinc-400">
+            - Erin Hanson
+          </footer>
+        </blockquote>
+      </Slide>
+
       {isOpen ? (
-        <div className="fixed inset-0 z-50 overflow-hidden bg-zinc-950/85 p-2 backdrop-blur-md sm:p-3">
-          <div className="mx-auto flex h-[calc(100dvh-1rem)] max-w-6xl flex-col rounded-xl border border-zinc-800 bg-white p-3 shadow-2xl shadow-zinc-950/60 dark:bg-zinc-950 sm:h-[calc(100dvh-1.5rem)]">
-            <div className="mb-3 flex flex-col gap-3 border-b border-zinc-200 pb-3 dark:border-zinc-800 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 className="font-incognito text-2xl font-bold tracking-tight">
-                  The 64 Boxes
-                </h2>
-                <p className="mt-1 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase text-zinc-500 dark:text-zinc-400">
-                  <span>Move {currentMoveNumber}</span>
-                  <span className="h-1 w-1 rounded-full bg-primary-color" />
-                  <span>{materialLead >= 0 ? `You +${materialLead}` : `Bot +${Math.abs(materialLead)}`}</span>
-                  {lastSan ? (
-                    <>
-                      <span className="h-1 w-1 rounded-full bg-primary-color" />
-                      <span>Last {lastSan}</span>
-                    </>
-                  ) : null}
-                </p>
+        <div className="fixed inset-0 z-50 overflow-hidden bg-zinc-950/90 bg-noise bg-zero p-2 text-white backdrop-blur-md">
+          <div className="flex h-full items-center justify-center">
+            <div className="relative flex h-full w-full items-center justify-center">
+              <div className="absolute left-3 top-3 z-30 rounded-lg bg-[#211f1c]/90 px-3 py-2 shadow-xl shadow-black/30 backdrop-blur">
+                <div>
+                  <h3 className="font-incognito text-base font-black tracking-tight text-white sm:text-lg">
+                    The 64 Boxes
+                  </h3>
+                  <p className="mt-0.5 max-w-44 truncate text-[11px] font-bold uppercase tracking-wide text-zinc-400 sm:max-w-xs">
+                    {status}
+                  </p>
+                </div>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex rounded-lg border border-zinc-200 bg-zinc-50 p-1 text-xs font-semibold dark:border-zinc-800 dark:bg-zinc-900">
-                  {(["casual", "sharp"] as const).map((level) => (
-                    <button
-                      key={level}
-                      type="button"
-                      onClick={() => setDifficulty(level)}
-                      className={`rounded-md px-4 py-2 capitalize transition ${
-                        difficulty === level
-                          ? "bg-zinc-950 text-white shadow-md shadow-zinc-950/15 dark:bg-white dark:text-zinc-950"
-                          : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
-                      }`}
-                    >
-                      {level}
-                    </button>
-                  ))}
-                </div>
+              <div className="absolute right-3 top-3 z-30 flex gap-2">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="grid h-9 w-9 place-items-center rounded-lg border border-zinc-200 bg-zinc-50 text-zinc-500 transition hover:border-primary-color hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:text-white"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-white/10 text-zinc-300 transition hover:bg-white/15 hover:text-white"
                   aria-label="Close chess board"
                 >
                   <FaTimes aria-hidden="true" />
                 </button>
               </div>
-            </div>
 
-            <div className="grid min-h-0 flex-1 gap-4 md:grid-cols-[minmax(0,1fr)_280px] md:items-start lg:grid-cols-[minmax(0,1fr)_300px]">
-          <div className="mx-auto w-full max-w-[min(100%,calc(100dvh-11rem),560px)]">
-            <div className="rounded-xl border border-[#4b3928] bg-[#261b12] p-2 shadow-2xl shadow-zinc-950/25 ring-1 ring-white/10 dark:shadow-zinc-950/50">
-              <div className="rounded-lg border border-black/35 bg-[#2d2117] p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),inset_0_-18px_42px_rgba(0,0,0,0.36)]">
-                <div className="grid aspect-square grid-cols-8 overflow-hidden rounded-md border border-black/55 bg-zinc-900 shadow-[0_18px_45px_rgba(0,0,0,0.28)]">
-                {boardSquares.map((square) => {
-                  const piece = game.get(square);
-                  const PieceIcon = piece ? pieceIcons[piece.type] : null;
-                    const isSelected = selectedSquare === square;
-                    const isTarget = legalTargets.includes(square);
-                    const isHint = hintMove?.from === square || hintMove?.to === square;
-                    const isLastMove = lastMove?.from === square || lastMove?.to === square;
-                    const isHovered = hoveredSquare === square;
-                    const lightSquare = isLightSquare(square);
-                    const showRank = square[0] === (isFlipped ? "h" : "a");
-                    const showFile = square[1] === (isFlipped ? "8" : "1");
+              <div className="w-[min(calc(100vw-5.5rem),calc(100dvh-1rem),900px)] sm:w-[min(calc(100vw-6.5rem),calc(100dvh-1rem),900px)]">
+                <div className={`relative rounded-lg bg-[#2b2926] p-1.5 shadow-2xl shadow-black/35 ${gameOutcome?.tone === "win" ? "chess-win-board" : ""}`}>
+                  <div className="grid aspect-square grid-cols-8 overflow-hidden rounded-lg border border-black/50 bg-zinc-900">
+                    {boardSquares.map((square) => {
+                      const piece = game.get(square);
+                      const PieceIcon = piece ? pieceIcons[piece.type] : null;
+                      const isSelected = selectedSquare === square;
+                      const isTarget = legalTargets.includes(square);
+                      const isHint = hintMove?.from === square || hintMove?.to === square;
+                      const isLastMove = lastMove?.from === square || lastMove?.to === square;
+                      const isHovered = hoveredSquare === square;
+                      const lightSquare = isLightSquare(square);
+                      const showRank = square[0] === (isFlipped ? "h" : "a");
+                      const showFile = square[1] === (isFlipped ? "8" : "1");
 
-                    return (
-                      <button
-                        key={square}
-                        type="button"
-                        onClick={() => handleSquareClick(square)}
-                        onMouseEnter={() => setHoveredSquare(square)}
-                        onMouseLeave={() => setHoveredSquare(null)}
-                        className={`group relative grid aspect-square place-items-center overflow-hidden text-2xl transition duration-200 sm:text-3xl md:text-4xl ${
-                          lightSquare
-                            ? "bg-[#eee0c4] text-zinc-950"
-                            : "bg-[#2f6f58] text-zinc-950"
-                        } ${
-                          isSelected
-                            ? "z-10 ring-4 ring-inset ring-primary-color"
-                            : "hover:z-10 hover:brightness-110"
-                        }`}
-                        aria-label={piece ? `${piece.color}${piece.type} on ${square}` : square}
-                      >
-                        <span className="absolute inset-0 opacity-0 transition group-hover:opacity-100">
-                          <span className="absolute inset-0 bg-white/20" />
-                          <span className="absolute inset-x-0 top-0 h-px bg-white/35" />
-                        </span>
-                        {isLastMove ? (
-                          <span
-                            className="absolute inset-0 bg-primary-color/20 shadow-[inset_0_0_0_2px_rgba(51,224,146,0.62),inset_0_0_20px_rgba(51,224,146,0.32)]"
-                            aria-hidden="true"
-                          />
-                        ) : null}
-                        {isHint ? (
-                          <span
-                            className="absolute inset-1 rounded border-2 border-amber-300/95 bg-amber-200/20 shadow-[inset_0_0_18px_rgba(252,211,77,0.42)]"
-                            aria-hidden="true"
-                          />
-                        ) : null}
-                        {isTarget ? (
-                          <span
-                            className={`absolute rounded-full ${
-                              piece
-                                ? "inset-2 border-4 border-primary-color/90 shadow-[0_0_16px_rgba(51,224,146,0.45)]"
-                                : "h-3.5 w-3.5 bg-zinc-950/45 shadow-[0_0_0_7px_rgba(51,224,146,0.22)] dark:bg-white/70"
-                            }`}
-                            aria-hidden="true"
-                          />
-                        ) : null}
-                        {showRank ? (
-                          <span className={`absolute left-1.5 top-1.5 text-[10px] font-black leading-none ${
-                            lightSquare ? "text-[#3b7a63]" : "text-[#eadfc9]/80"
-                          }`}>
-                            {square[1]}
-                          </span>
-                        ) : null}
-                        {showFile ? (
-                          <span className={`absolute bottom-1.5 right-1.5 text-[10px] font-black leading-none ${
-                            lightSquare ? "text-[#3b7a63]" : "text-[#eadfc9]/80"
-                          }`}>
-                            {square[0]}
-                          </span>
-                        ) : null}
-                        {piece && PieceIcon ? (
-                          <span
-                            className={`relative grid h-[78%] w-[78%] select-none place-items-center transition duration-200 ${
-                            piece.color === "w"
-                                ? "text-[#fff8e8] drop-shadow-[0_3px_2px_rgba(0,0,0,0.58)]"
-                                : "text-zinc-950 drop-shadow-[0_2px_1px_rgba(255,255,255,0.22)]"
-                          } ${isHovered || isSelected ? "-translate-y-1 scale-110" : ""}`}
-                          aria-hidden="true"
+                      return (
+                        <button
+                          key={square}
+                          type="button"
+                          onClick={() => handleSquareClick(square)}
+                          onMouseEnter={() => setHoveredSquare(square)}
+                          onMouseLeave={() => setHoveredSquare(null)}
+                          className={`group relative grid aspect-square place-items-center overflow-hidden text-2xl transition duration-200 sm:text-3xl md:text-4xl ${
+                            lightSquare
+                              ? "bg-[#eee0c4] text-zinc-950"
+                              : "bg-[#76a05a] text-zinc-950"
+                          } ${
+                            isSelected
+                              ? "z-10 ring-4 ring-inset ring-primary-color"
+                              : "hover:z-10 hover:brightness-110"
+                          }`}
+                          aria-label={piece ? `${piece.color}${piece.type} on ${square}` : square}
                         >
-                            <PieceIcon className="h-full w-full" />
-                          </span>
-                        ) : null}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="mt-1.5 flex items-center justify-between gap-3 px-1 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
-                <span className="truncate">{selectedSquare ? `Selected ${selectedSquare}` : "Tap a white piece to start"}</span>
-                <span className="shrink-0 text-right text-tertiary-color dark:text-primary-color">{botThinking ? "Bot calculating..." : status}</span>
-              </div>
-            </div>
-          </div>
+                          {isLastMove ? (
+                            <span
+                              className="absolute inset-0 bg-primary-color/20 shadow-[inset_0_0_0_2px_rgba(51,224,146,0.55)]"
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                          {isHint ? (
+                            <span
+                              className="absolute inset-1 rounded border-2 border-amber-300/95 bg-amber-200/20"
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                          {isTarget ? (
+                            <span
+                              className={`absolute rounded-full ${
+                                piece
+                                  ? "inset-2 border-4 border-primary-color/90"
+                                  : "h-3.5 w-3.5 bg-zinc-950/45 shadow-[0_0_0_7px_rgba(51,224,146,0.22)]"
+                              }`}
+                              aria-hidden="true"
+                            />
+                          ) : null}
+                          {showRank ? (
+                            <span className={`absolute left-1.5 top-1.5 text-[10px] font-black leading-none ${
+                              lightSquare ? "text-[#5f8746]" : "text-[#f5ecd2]/85"
+                            }`}>
+                              {square[1]}
+                            </span>
+                          ) : null}
+                          {showFile ? (
+                            <span className={`absolute bottom-1.5 right-1.5 text-[10px] font-black leading-none ${
+                              lightSquare ? "text-[#5f8746]" : "text-[#f5ecd2]/85"
+                            }`}>
+                              {square[0]}
+                            </span>
+                          ) : null}
+                          {piece && PieceIcon ? (
+                            <span
+                              className={`relative grid h-[78%] w-[78%] select-none place-items-center transition duration-200 ${
+                                piece.color === "w"
+                                  ? "text-[#fff8e8] drop-shadow-[0_3px_2px_rgba(0,0,0,0.58)]"
+                                  : "text-zinc-950 drop-shadow-[0_2px_1px_rgba(255,255,255,0.22)]"
+                              } ${isHovered || isSelected ? "-translate-y-1 scale-110" : ""}`}
+                              aria-hidden="true"
+                            >
+                              <PieceIcon className="h-full w-full" />
+                            </span>
+                          ) : null}
+                        </button>
+                      );
+                    })}
+                  </div>
 
-          <aside className="min-h-0 rounded-xl border border-zinc-200 bg-white/90 p-3 shadow-2xl shadow-zinc-950/10 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-zinc-950/25">
-            <div className="flex items-center gap-2 border-b border-zinc-200 pb-3 dark:border-zinc-800">
-              <span className="relative h-10 w-10 overflow-hidden rounded-full bg-zinc-900 shadow-lg shadow-zinc-950/10 ring-1 ring-zinc-200 dark:shadow-zinc-950/30 dark:ring-zinc-800">
-                <Image
-                  src="/chatbot-avatar.png"
-                  alt=""
-                  width={96}
-                  height={96}
-                  className="h-full w-full object-cover"
-                />
-              </span>
-              <div>
-                <h3 className="font-incognito text-lg font-bold tracking-tight">
-                  Ayush Bot
-                </h3>
-                <p className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
-                  <span>{status}</span>
-                  {botThinking ? (
-                    <span className="flex gap-1" aria-hidden="true">
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-color [animation-delay:-0.2s]" />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-color [animation-delay:-0.1s]" />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-color" />
-                    </span>
+                  {gameOutcome ? (
+                    <div
+                      className="absolute inset-2 z-20 grid place-items-center rounded-lg bg-black/20 px-4"
+                      role="status"
+                      aria-live="polite"
+                    >
+                      {gameOutcome.tone === "win" ? (
+                        <div className="chess-confetti" aria-hidden="true">
+                          {Array.from({ length: 18 }).map((_, index) => (
+                            <span key={index} />
+                          ))}
+                        </div>
+                      ) : null}
+                      <div className="max-w-xs rounded-xl border border-white/15 bg-[#211f1c]/95 px-5 py-4 text-center shadow-2xl backdrop-blur">
+                        <p className="font-incognito text-3xl font-black tracking-tight">
+                          {gameOutcome.title}
+                        </p>
+                        <p className="mt-1 text-sm font-medium text-zinc-300">
+                          {gameOutcome.message}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={resetGame}
+                          className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-primary-color px-5 py-2.5 text-sm font-black text-zinc-950 transition hover:-translate-y-0.5 hover:bg-white"
+                        >
+                          <FaRedoAlt aria-hidden="true" />
+                          New Game
+                        </button>
+                      </div>
+                    </div>
                   ) : null}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={resetGame}
-                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-xs font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
-                title="New game"
-              >
-                <FaRedoAlt aria-hidden="true" className="transition group-hover:rotate-180" />
-                New game
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsFlipped((currentValue) => !currentValue)}
-                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-xs font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
-                title="Flip board"
-              >
-                <FaExchangeAlt aria-hidden="true" className="transition group-hover:scale-110" />
-                Flip
-              </button>
-              <button
-                type="button"
-                onClick={showHint}
-                disabled={game.turn() !== humanColor || game.isGameOver() || botThinking}
-                className="group flex items-center justify-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2 py-2 text-xs font-semibold text-amber-700 transition hover:-translate-y-0.5 hover:border-amber-300 hover:bg-white hover:shadow-lg hover:shadow-amber-300/15 disabled:cursor-not-allowed disabled:opacity-45 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200 dark:hover:bg-amber-400/15"
-                title="Show hint"
-              >
-                <FaLightbulb aria-hidden="true" className="transition group-hover:scale-110" />
-                Hint
-              </button>
-              <button
-                type="button"
-                onClick={undoLastTurn}
-                disabled={!history.length || botThinking}
-                className="group flex items-center justify-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-2 text-xs font-semibold transition hover:-translate-y-0.5 hover:border-primary-color hover:bg-white hover:text-tertiary-color hover:shadow-lg hover:shadow-primary-color/10 disabled:cursor-not-allowed disabled:opacity-45 dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:bg-zinc-900 dark:hover:text-primary-color"
-                title="Undo turn"
-              >
-                <FaUndoAlt aria-hidden="true" className="transition group-hover:-rotate-12" />
-                Undo
-              </button>
-            </div>
-
-            <div className="mt-3 grid gap-2 text-xs">
-              <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-primary-bg">
-                <div className="mb-1.5 flex items-center gap-2 font-medium">
-                  <FaUserAlt aria-hidden="true" className="text-tertiary-color dark:text-primary-color" />
-                  <span>You captured</span>
-                  <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
-                    +{userMaterial}
-                  </span>
-                </div>
-                <div className="flex min-h-7 flex-wrap gap-1 text-xl leading-none">
-                  {userCapturedPieces.length
-                    ? userCapturedPieces.map((piece, index) => {
-                        const CapturedIcon = pieceIcons[piece];
-
-                        return (
-                          <span
-                            key={`${piece}-${index}`}
-                            className="grid h-7 w-7 place-items-center rounded-md bg-zinc-950 text-primary-color shadow-line-light dark:bg-zinc-950 dark:shadow-line-dark"
-                          >
-                            <CapturedIcon aria-hidden="true" className="h-4 w-4" />
-                          </span>
-                        );
-                      })
-                    : "-"}
                 </div>
               </div>
 
-              <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-primary-bg">
-                <div className="mb-1.5 flex items-center gap-2 font-medium">
-                  <FaRobot aria-hidden="true" className="text-tertiary-color dark:text-primary-color" />
-                  <span>Bot captured</span>
-                  <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-xs text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
-                    +{botMaterial}
-                  </span>
-                </div>
-                <div className="flex min-h-7 flex-wrap gap-1 text-xl leading-none">
-                  {botCapturedPieces.length
-                    ? botCapturedPieces.map((piece, index) => {
-                        const CapturedIcon = pieceIcons[piece];
+              <div className="absolute right-3 top-1/2 z-30 grid w-14 -translate-y-1/2 grid-cols-1 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/85 text-center text-[10px] font-bold text-zinc-300 shadow-2xl shadow-black/35 backdrop-blur sm:w-16 sm:text-xs">
+                <button
+                  type="button"
+                  onClick={resetGame}
+                  className="flex flex-col items-center gap-1 border-b border-zinc-800 px-2 py-3 transition hover:bg-white/10"
+                  title="New game"
+                >
+                  <FaRedoAlt aria-hidden="true" className="text-lg" />
+                  New
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsFlipped((currentValue) => !currentValue)}
+                  className="flex flex-col items-center gap-1 border-b border-zinc-800 px-2 py-3 transition hover:bg-white/10"
+                  title="Flip board"
+                >
+                  <FaExchangeAlt aria-hidden="true" className="text-lg" />
+                  Flip
+                </button>
+                <button
+                  type="button"
+                  onClick={showHint}
+                  disabled={game.turn() !== humanColor || game.isGameOver() || botThinking}
+                  className="flex flex-col items-center gap-1 border-b border-zinc-800 px-2 py-3 text-amber-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
+                  title="Show hint"
+                >
+                  <FaLightbulb aria-hidden="true" className="text-lg" />
+                  Hint
+                </button>
+                <button
+                  type="button"
+                  onClick={undoLastTurn}
+                  disabled={!history.length || botThinking}
+                  className="flex flex-col items-center gap-1 px-2 py-3 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
+                  title="Undo turn"
+                >
+                  <FaUndoAlt aria-hidden="true" className="text-lg" />
+                  Undo
+                </button>
+              </div>
 
-                        return (
-                          <span
-                            key={`${piece}-${index}`}
-                            className="grid h-7 w-7 place-items-center rounded-md bg-white text-zinc-950 shadow-line-light dark:bg-white dark:shadow-line-dark"
-                          >
-                            <CapturedIcon aria-hidden="true" className="h-4 w-4" />
-                          </span>
-                        );
-                      })
-                    : "-"}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-3">
-              <div className="mb-1.5 flex items-center justify-between text-xs font-semibold">
-                <span className="flex items-center gap-2">
-                  <FaChessKnight aria-hidden="true" className="text-tertiary-color dark:text-primary-color" />
-                  Moves
-                </span>
-                <span className="flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-1 text-[11px] font-bold uppercase text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
-                  <FaBolt aria-hidden="true" className="text-primary-color" />
-                  Live
-                </span>
-              </div>
-              <div className="max-h-[18dvh] overflow-y-auto rounded-lg border border-zinc-200 bg-zinc-50 p-2 text-xs shadow-inner dark:border-zinc-800 dark:bg-zinc-950">
-                {history.length ? (
-                  <ol className="space-y-1.5">
-                    {movePairs(history).map((pair, index) => (
-                      <li
-                        key={`${pair.white?.lan ?? "white"}-${pair.black?.lan ?? "black"}-${index}`}
-                        className="grid grid-cols-[2rem_1fr_1fr] gap-2 rounded-md px-2 py-1.5 font-mono text-xs text-zinc-600 transition hover:bg-white dark:text-zinc-300 dark:hover:bg-zinc-900"
-                      >
-                        <span className="text-zinc-400">{index + 1}.</span>
-                        <span className={pair.white === history[history.length - 1] ? "font-bold text-tertiary-color dark:text-primary-color" : ""}>
-                          {pair.white?.san ?? ""}
-                        </span>
-                        <span className={pair.black === history[history.length - 1] ? "font-bold text-tertiary-color dark:text-primary-color" : ""}>
-                          {pair.black?.san ?? ""}
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <p className="rounded-md border border-dashed border-zinc-300 px-3 py-5 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-                    Ready. Your first move starts the match.
-                  </p>
-                )}
-              </div>
-            </div>
-          </aside>
             </div>
           </div>
         </div>

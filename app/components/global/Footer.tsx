@@ -1,10 +1,17 @@
+"use client";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import sanitylogo from "@/public/sanity.png";
 import vercellogo from "@/public/vercel.svg";
 import nextjslogo from "@/public/nextjs.svg";
 import UnmountStudio from "./Unmount";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname === "/contact") return null;
+
   return (
     <UnmountStudio>
       <footer className="border-t dark:border-zinc-800 border-zinc-100 mt-44 lg:min-h-[250px] min-h-full relative">

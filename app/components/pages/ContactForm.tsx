@@ -1,95 +1,91 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import {
-  BiEnvelope,
-  BiLinkExternal,
-  BiLogoLinkedinSquare,
-  BiSend,
-} from "react-icons/bi";
+import { BiSend } from "react-icons/bi";
 import ContactEngagement from "./ContactEngagement";
-
-const contactEmail = "ayushkumar.nov.2005@gmail.com";
-const linkedInUrl = "https://www.linkedin.com/in/ayush-kumar-a8a1592a4/";
 
 export default function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const subject = encodeURIComponent(
-      `Portfolio hello from ${name.trim() || "someone"}`
-    );
-    const body = encodeURIComponent(
-      [
-        `Name: ${name.trim()}`,
-        `Email: ${email.trim()}`,
-        "",
-        message.trim(),
-      ].join("\n")
-    );
+    setIsSending(true);
+    setStatus("Sending your message...");
 
-    window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
-    setStatus("Your email app is opening. I'll be happy to hear from you.");
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.error ?? "Could not send your message.");
+      }
+
+      setName("");
+      setEmail("");
+      setMessage("");
+      setStatus("Sent. I got your hello.");
+    } catch (error) {
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : "Could not send your message right now."
+      );
+    } finally {
+      setIsSending(false);
+    }
   }
 
   return (
-    <div className="space-y-10">
-      <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-        <section className="space-y-6">
-        <div className="space-y-4">
-          <h1 className="font-incognito text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            You made it to the end of my website. Might as well say hi.{" "}
-            <span aria-hidden="true">&#128075;</span>
-          </h1>
-          <p className="max-w-xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Whether it is an internship, collaboration, project idea, or just a
-            quick hello, I would love to hear from you.
-          </p>
-        </div>
+    <div className="relative mx-auto flex max-w-6xl flex-col justify-center gap-5 overflow-visible pb-8 md:h-[calc(100dvh-15rem)] md:min-h-0 md:overflow-hidden md:pb-0">
+      <div className="grid items-center gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+        <section className="flex min-h-0 flex-col justify-center">
+          <div className="space-y-4">
+            <h1 className="font-incognito text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
+              Aww... you stayed till the end.{" "}
+              <span aria-hidden="true">❤️</span>
+            </h1>
+            <p className="max-w-xl whitespace-pre-line text-base leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-lg">
+              {`I genuinely appreciate you taking the time to look through everything.
+It means more than you know.
 
-        <div className="flex flex-wrap gap-3">
-          <a
-            href={`mailto:${contactEmail}`}
-            className="inline-flex h-11 items-center gap-x-2 rounded-md border border-zinc-200 bg-zinc-50 px-4 font-incognito font-semibold text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-primary-bg dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white"
-          >
-            <BiEnvelope className="text-xl" aria-hidden="true" />
-            Email Me
-          </a>
-          <a
-            href={linkedInUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="inline-flex h-11 items-center gap-x-2 rounded-md border border-zinc-200 bg-zinc-50 px-4 font-incognito font-semibold text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-primary-bg dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white"
-          >
-            <BiLogoLinkedinSquare className="text-xl" aria-hidden="true" />
-            LinkedIn
-            <BiLinkExternal className="text-base" aria-hidden="true" />
-          </a>
-        </div>
-
+So... let's not end it here.
+Send me a hello.`}
+            </p>
+          </div>
         </section>
 
         <form
           onSubmit={handleSubmit}
-          className="grid gap-4 rounded-md border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-primary-bg"
+          className="grid min-h-0 gap-4 rounded-xl border border-zinc-200 bg-zinc-50/80 p-5 shadow-line-light dark:border-zinc-800 dark:bg-primary-bg dark:shadow-line-dark sm:p-6"
         >
         <div className="grid gap-4 sm:grid-cols-2">
-          <label className="grid gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          <label className="grid gap-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400">
             Name
             <input
               required
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Your name"
-              className="h-11 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-primary-color dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+              className="h-11 rounded-lg border border-zinc-200 bg-white px-4 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-primary-color dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
             />
           </label>
-          <label className="grid gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          <label className="grid gap-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400">
             Email
             <input
               required
@@ -97,20 +93,20 @@ export default function ContactForm() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="your@email.com"
-              className="h-11 rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-primary-color dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+              className="h-11 rounded-lg border border-zinc-200 bg-white px-4 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-primary-color dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
             />
           </label>
         </div>
 
-        <label className="grid gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+        <label className="grid gap-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400">
           Message
           <textarea
             required
             value={message}
             onChange={(event) => setMessage(event.target.value)}
             placeholder="What should we talk about?"
-            rows={6}
-            className="min-h-40 resize-y rounded-md border border-zinc-200 bg-white px-3 py-3 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-primary-color dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+            rows={5}
+            className="min-h-32 resize-none rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-800 outline-none transition placeholder:text-zinc-400 focus:border-primary-color dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
           />
         </label>
 
@@ -120,16 +116,19 @@ export default function ContactForm() {
           </p>
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center gap-x-2 rounded-md bg-zinc-950 px-5 font-incognito font-semibold text-white transition hover:scale-[1.02] dark:bg-white dark:text-zinc-950"
+            disabled={isSending}
+            className="inline-flex h-11 items-center justify-center gap-x-2 rounded-lg bg-zinc-950 px-5 font-incognito font-semibold text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-zinc-950"
           >
             <BiSend className="text-lg" aria-hidden="true" />
-            Send Message
+            {isSending ? "Sending..." : "Send Message"}
           </button>
         </div>
         </form>
       </div>
 
-      <ContactEngagement />
+      <div className="mx-auto mt-4 w-full max-w-md">
+        <ContactEngagement />
+      </div>
     </div>
   );
 }

@@ -12,7 +12,6 @@ import {
   HiOutlineX,
   HiUser,
 } from "react-icons/hi";
-import Logo from "../../../public/logo.svg";
 
 export default function MobileMenu() {
   const [navShow, setNavShow] = useState(false);
@@ -39,7 +38,7 @@ export default function MobileMenu() {
     },
     {
       title: "Beyond Code",
-      href: "/photos",
+      href: "/Beyondcode",
       icon: HiCamera,
     },
     {
@@ -76,7 +75,7 @@ export default function MobileMenu() {
       >
         <div className="flex items-center justify-between mt-6 px-8">
           <Link href="/" onClick={onToggleNav}>
-            <Image src={Logo} width={35} height={35} alt="logo" priority />
+            <Image src="/logo.png" width={42} height={42} alt="logo" priority className="h-10 w-10 rounded-md object-cover" />
           </Link>
 
           <button

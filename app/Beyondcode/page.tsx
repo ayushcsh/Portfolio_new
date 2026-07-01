@@ -4,17 +4,17 @@ import FavoriteSongs from "@/app/components/pages/FavoriteSongs";
 import FavoritePhotos from "@/app/components/pages/FavoritePhotos";
 
 export const metadata: Metadata = {
-  title: "Photos | Ayush Kumar",
-  description: "Explore photos uploaded and curated by Ayush Kumar",
+  title: "Beyond Code | Ayush Kumar",
+  description: "Explore the music, photos, and quiet chess corner beyond Ayush Kumar's code.",
   openGraph: {
-    title: "Photos | Ayush Kumar",
-    description: "Explore photos uploaded and curated by Ayush Kumar",
+    title: "Beyond Code | Ayush Kumar",
+    description: "Explore the music, photos, and quiet chess corner beyond Ayush Kumar's code.",
     images:
       "/photos/WhatsApp%20Image%202026-06-28%20at%205.49.50%20PM%20(1).jpeg",
   },
 };
 
-export default function Photos() {
+export default function BeyondCode() {
   return (
     <main className="max-w-7xl mx-auto md:px-16 px-6 lg:mt-32 mt-20">
       <FavoriteSongs />
