@@ -88,12 +88,12 @@ export default function MobileMenu() {
             <HiOutlineX className="text-xl" />
           </button>
         </div>
-        <nav className="flex flex-col mt-6">
+        <nav className="mt-4 flex max-h-[calc(100dvh-7rem)] flex-col overflow-y-auto pb-6">
           {data.map((link) => (
             <Link
               key={link.title}
               href={link.href}
-              className="flex items-center gap-x-2 font-incognito font-semibold text-lg dark:shadow-line-dark shadow-line-light p-6 group"
+              className="flex items-center gap-x-2 p-4 font-incognito text-base font-semibold shadow-line-light group dark:shadow-line-dark"
               onClick={onToggleNav}
             >
               <link.icon

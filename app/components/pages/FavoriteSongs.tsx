@@ -251,7 +251,7 @@ export default function FavoriteSongs() {
                   alt={`${song.title} cover`}
                   fill
                   sizes="(min-width: 768px) 270px, 180px"
-                  className="object-cover transition duration-500 group-hover:scale-105"
+                  className="rounded-[inherit] object-cover transition duration-500 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-zinc-950 transition duration-300 poster-dim" />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/75 via-zinc-950/10 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
@@ -340,15 +340,16 @@ export default function FavoriteSongs() {
 
       <style jsx>{`
         .poster-stage {
-          --poster-size: 180px;
-          --poster-shift: 148px;
-          height: 270px;
+          --poster-size: 132px;
+          --poster-shift: 104px;
+          height: 210px;
         }
 
         .poster-card {
           height: var(--poster-size);
           width: var(--poster-size);
           background: #09090b;
+          border-radius: 1rem;
           opacity: var(--poster-opacity);
           transform: translate(-50%, calc(-50% + var(--poster-lift, 0px)))
             translateX(calc(var(--poster-position) * var(--poster-shift)))
