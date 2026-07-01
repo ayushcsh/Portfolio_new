@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import funImage from "@/public/yeah-right.png";
 import { BiCheckbox, BiSolidCheckboxChecked } from "react-icons/bi";
 
 export default function EasterEgg({ isMet }: { isMet: boolean }) {
@@ -39,9 +38,10 @@ export default function EasterEgg({ isMet }: { isMet: boolean }) {
         className={`fixed z-30 bottom-1/2 duration-1000 ease-[cubic-bezier(0.77,0,0.175,1)] ${
           image ? "left-0" : "-left-80"
         }`}
-        src={funImage}
+        src="/yeah-right.png"
         width={250}
         height={250}
+        unoptimized
         quality={100}
         alt="yeah right"
       />

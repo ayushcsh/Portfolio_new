@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { BiShow } from "react-icons/bi";
 import sanitylogo from "@/public/sanity.png";
 import vercellogo from "@/public/vercel.svg";
 import nextjslogo from "@/public/nextjs.svg";
@@ -9,6 +11,15 @@ import UnmountStudio from "./Unmount";
 
 export default function Footer() {
   const pathname = usePathname();
+  const [views, setViews] = useState(0);
+
+  useEffect(() => {
+    const savedViews = Number(
+      window.localStorage.getItem("ayush-contact-view-count") ?? 0
+    );
+
+    setViews(savedViews);
+  }, []);
 
   if (pathname === "/contact") return null;
 
@@ -77,6 +88,15 @@ export default function Footer() {
             </small>
           </div>
         </div>
+        {views > 0 ? (
+          <div
+            className="absolute bottom-4 right-6 inline-flex items-center gap-1.5 text-[11px] font-medium text-zinc-300 opacity-45 dark:text-zinc-700 md:right-16"
+            title={`${views.toLocaleString()} contact page views`}
+          >
+            <BiShow className="text-sm" aria-hidden="true" />
+            <span>{views.toLocaleString()} quiet visits</span>
+          </div>
+        ) : null}
       </footer>
     </UnmountStudio>
   );

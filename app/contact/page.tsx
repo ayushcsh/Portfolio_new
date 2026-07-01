@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function Contact() {
   return (
-    <main className="relative mx-auto max-w-7xl overflow-visible px-6 md:-mt-14 md:overflow-hidden md:px-16">
+    <main className="relative mx-auto max-w-7xl overflow-visible px-6 md:-mt-14 md:px-16">
       <Slide>
         <ContactForm />
       </Slide>

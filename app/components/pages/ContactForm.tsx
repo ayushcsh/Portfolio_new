@@ -52,7 +52,7 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="relative mx-auto flex max-w-6xl flex-col justify-center gap-5 overflow-visible pb-8 md:h-[calc(100dvh-15rem)] md:min-h-0 md:overflow-hidden md:pb-0">
+    <div className="relative mx-auto flex max-w-6xl flex-col justify-center gap-5 overflow-visible pb-8 md:h-[calc(100dvh-15rem)] md:min-h-0 md:pb-0">
       <div className="grid items-center gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <section className="flex min-h-0 flex-col justify-center">
           <div className="space-y-4">

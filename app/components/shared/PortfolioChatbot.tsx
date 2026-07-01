@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { HiPaperAirplane, HiX } from "react-icons/hi";
+import { HiPaperAirplane, HiVolumeUp, HiX } from "react-icons/hi";
 
 type ChatMessage = {
   id: string;
@@ -19,14 +19,31 @@ const starterMessage: ChatMessage = {
 const chatAvatarSrc = "/chatbot-avatar.png";
 const fallbackAvatarSrc = "/logo.svg";
 
+function renderMessageContent(content: string) {
+  return content.split(/(\*\*[^*]+\*\*)/g).map((part, index) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={`${part}-${index}`} className="font-bold">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+
+    return part;
+  });
+}
+
 export default function PortfolioChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([starterMessage]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
+  const [voiceLoadingId, setVoiceLoadingId] = useState<string | null>(null);
   const [showGreeting, setShowGreeting] = useState(true);
   const [avatarSrc, setAvatarSrc] = useState(chatAvatarSrc);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -111,6 +128,60 @@ export default function PortfolioChatbot() {
     }
   }
 
+  async function playAssistantMessage(message: ChatMessage) {
+    if (message.role !== "assistant" || voiceLoadingId) return;
+
+    if (playingMessageId === message.id && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setPlayingMessageId(null);
+      return;
+    }
+
+    audioRef.current?.pause();
+    setVoiceLoadingId(message.id);
+
+    try {
+      const response = await fetch("/api/chat/voice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: message.content }),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(data?.error ?? "Unable to play voice response.");
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+
+      audioRef.current = audio;
+      setPlayingMessageId(message.id);
+
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        setPlayingMessageId(null);
+      };
+      audio.onerror = () => {
+        URL.revokeObjectURL(audioUrl);
+        setPlayingMessageId(null);
+      };
+
+      await audio.play();
+    } catch (error) {
+      console.error("Voice playback error:", error);
+      setPlayingMessageId(null);
+    } finally {
+      setVoiceLoadingId(null);
+    }
+  }
+
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
       {isOpen ? (
@@ -167,14 +238,43 @@ export default function PortfolioChatbot() {
                     />
                   </span>
                 ) : null}
-                <div
-                  className={`max-w-[82%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-                    message.role === "user"
-                      ? "bg-primary-color text-zinc-950"
-                      : "border border-zinc-200 bg-zinc-50 text-zinc-700 dark:border-zinc-800 dark:bg-primary-bg dark:text-zinc-200"
-                  }`}
-                >
-                  {message.content}
+                <div className="max-w-[82%]">
+                  <div
+                    className={`rounded-2xl px-3 py-2 text-sm leading-relaxed ${
+                      message.role === "user"
+                        ? "bg-primary-color text-zinc-950"
+                        : "border border-zinc-200 bg-zinc-50 text-zinc-700 dark:border-zinc-800 dark:bg-primary-bg dark:text-zinc-200"
+                    }`}
+                  >
+                    {renderMessageContent(message.content)}
+                  </div>
+                  {message.role === "assistant" ? (
+                    <button
+                      type="button"
+                      onClick={() => playAssistantMessage(message)}
+                      disabled={voiceLoadingId !== null}
+                      className="mt-1.5 flex h-7 w-7 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-500 transition hover:border-primary-color hover:text-zinc-900 disabled:cursor-wait disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400 dark:hover:text-white"
+                      aria-label={
+                        playingMessageId === message.id
+                          ? "Stop voice response"
+                          : "Listen to voice response"
+                      }
+                      title={
+                        playingMessageId === message.id
+                          ? "Stop voice"
+                          : "Listen"
+                      }
+                    >
+                      <HiVolumeUp
+                        aria-hidden="true"
+                        className={`h-4 w-4 ${
+                          playingMessageId === message.id
+                            ? "text-primary-color"
+                            : ""
+                        }`}
+                      />
+                    </button>
+                  ) : null}
                 </div>
               </div>
             ))}

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { BiHeart, BiShow, BiSolidHeart } from "react-icons/bi";
+import { BiHeart, BiSolidHeart } from "react-icons/bi";
 
 const likedKey = "ayush-contact-liked";
 const viewCountKey = "ayush-contact-view-count";
@@ -10,7 +10,6 @@ const sessionViewKey = "ayush-contact-session-viewed";
 
 export default function ContactEngagement() {
   const [liked, setLiked] = useState(false);
-  const [views, setViews] = useState(0);
   const [showThanks, setShowThanks] = useState(false);
   const [showGift, setShowGift] = useState(false);
   const [giftImageSrc, setGiftImageSrc] = useState("/like-for-you.png");
@@ -27,7 +26,6 @@ export default function ContactEngagement() {
     }
 
     setLiked(savedLiked);
-    setViews(nextViews);
   }, []);
 
   function toggleLike() {
@@ -39,8 +37,8 @@ export default function ContactEngagement() {
         setShowThanks(true);
         setGiftImageSrc("/like-for-you.png");
         setShowGift(true);
-        window.setTimeout(() => setShowThanks(false), 3600);
-        window.setTimeout(() => setShowGift(false), 3600);
+        window.setTimeout(() => setShowThanks(false), 4500);
+        window.setTimeout(() => setShowGift(false), 4500);
       }
 
       return nextLiked;
@@ -71,7 +69,7 @@ export default function ContactEngagement() {
         </div>
       ) : null}
 
-      <p className="text-sm mt-18 text-zinc-500 dark:text-zinc-400">
+      <p className="mt-10 text-sm text-zinc-500 dark:text-zinc-400 md:mt-12">
         If this portfolio made you smile, leave a little like.
       </p>
 
@@ -80,7 +78,7 @@ export default function ContactEngagement() {
           type="button"
           onClick={toggleLike}
           aria-pressed={liked}
-          className={`inline-flex h-12 items-center gap-x-2.5 rounded-lg border px-6 font-incognito text-base font-bold shadow-line-light transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 focus:ring-offset-white dark:shadow-line-dark dark:focus:ring-red-500/40 dark:focus:ring-offset-zinc-900 ${
+          className={`inline-flex h-12 items-center gap-x-2.5 rounded-lg border px-6 font-incognito text-base font-bold shadow-line-light transition hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:shadow-line-dark dark:focus-visible:ring-red-500/40 dark:focus-visible:ring-offset-zinc-900 ${
             liked
               ? "border-red-200 bg-red-50 text-red-600 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-300"
               : "border-zinc-200 bg-zinc-50 text-zinc-700 hover:border-red-200 hover:text-red-500 dark:border-zinc-800 dark:bg-primary-bg dark:text-zinc-200 dark:hover:border-red-500/30 dark:hover:text-red-300"
@@ -93,14 +91,6 @@ export default function ContactEngagement() {
           )}
           {liked ? "Liked" : "Like this page"}
         </button>
-
-        <div
-          className="inline-flex items-center gap-x-1.5 text-[11px] font-medium text-zinc-400 opacity-60 dark:text-zinc-600"
-          title={`${views.toLocaleString()} contact page views`}
-        >
-          <BiShow className="text-sm" aria-hidden="true" />
-          <span>{views.toLocaleString()} quiet visits</span>
-        </div>
       </div>
     </div>
   );
